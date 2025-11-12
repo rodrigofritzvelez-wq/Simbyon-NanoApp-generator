@@ -1,0 +1,140 @@
+# .github/workflows/main_ci.yml
+name: Simbyon NanoApp Generator CI/CD
+
+# 🎯 Eventos que disparan el workflow
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+# ⚙️ Variables de Entorno Globales (Simulación)
+env:
+  NODE_VERSION: '20.x'
+  PYTHON_VERSION: '3.11'
+  GO_VERSION: '1.21.x'
+  POSTGRES_HOST: localhost
+  POSTGRES_DB: simbyon_db
+
+jobs:
+  # ===================================================
+  # 1. AUTH & NANOAPP SERVICE (Node.js/TypeScript SDK)
+  # ===================================================
+  build_node_services:
+    name: Build & Test Node.js Services (Auth/NanoApp)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: 📦 Install Dependencies (Auth/NanoApp)
+        # Asumiendo que los servicios Node.js están en carpetas separadas
+        run: |
+          npm install
+          # cd services/auth && npm install
+          # cd ../nanoapp && npm install
+
+      - name: ⚙️ Run TypeScript Compilation (TSC)
+        # Verifica la compilación del SDK y los servicios
+        run: npm run build
+        
+      - name: 🧪 Run Unit and Integration Tests
+        # Ejecuta pruebas para verificar la lógica de NanoApp y Auth
+        run: npm run test:ci
+
+      - name: 🔒 Run Security Scan (e.g., Snyk/NPM Audit)
+        run: npm audit --audit-level=high
+
+  # ===================================================
+  # 2. OPTIMIZATION SERVICE (Go/Golang)
+  # ===================================================
+  build_go_optimization:
+    name: Build & Test Go Optimization Service
+    runs-on: ubuntu-latest
+    needs: build_node_services
+    
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: 📦 Go Dependencies
+        # Asumiendo que el código Go está en services/optimization
+        run: cd services/optimization && go mod download
+
+      - name: 🏗️ Go Build
+        # Compila el ejecutable del servicio KODI
+        run: cd services/optimization && go build -v ./...
+
+      - name: 🧪 Go Test
+        # Ejecuta pruebas para los Algoritmos KODI y Adaptive Coherence Protocol
+        run: cd services/optimization && go test -v ./...
+        
+  # ===================================================
+  # 3. ANALYSIS SERVICE (Python)
+  # ===================================================
+  test_python_analysis:
+    name: Test Python Analysis Service (ML Models)
+    runs-on: ubuntu-latest
+    needs: build_node_services
+    
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 Install Python Dependencies
+        # Instala librerías ML (TensorFlow, Scikit-learn, etc.)
+        run: pip install -r services/analysis/requirements.txt
+
+      - name: 🧪 Run Python Tests (Analysis)
+        # Verifica la lógica de Detección de Sistema y Coherence Score
+        run: cd services/analysis && pytest
+        
+  # ===================================================
+  # 4. INTEGRATION TEST & DEPLOYMENT PREP
+  # ===================================================
+  integration_tests:
+    name: Integration Tests & DB Schema Check
+    runs-on: ubuntu-latest
+    needs: [build_node_services, build_go_optimization, test_python_analysis]
+    
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: 🐘 Setup PostgreSQL
+        # Inicia una instancia de PostgreSQL en el entorno de prueba
+        uses: ankane/setup-postgres@v1
+        with:
+          postgres-version: 15
+          database: ${{ env.POSTGRES_DB }}
+
+      - name: 📐 Run Database Migrations/Schema Check
+        # Asegura que el esquema de PostgreSQL sea consistente
+        run: ./scripts/run_migrations.sh
+
+      - name: 🧪 Run End-to-End Tests (Full Flow)
+        # Ejecuta pruebas que usan el SDK para simular el flujo completo
+        run: npm run test:e2e
