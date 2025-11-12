@@ -1,0 +1,316 @@
+¡Absolutamente! Generaré el código HTML para el archivo index.html de tu repositorio de GitHub, sirviendo como página de bienvenida y punto de activación principal para el Symbion NanoApp Generator.
+Esta página se centrará en la generación de la NanoApp (IROKU CORE) utilizando los métodos del SimbyonClient SDK que ya definiste.
+💻 index.html del Repositorio Simbyon NanoApp Generator
+Este código HTML incluye una interfaz simple con JavaScript que utiliza las funciones clave del SDK para el flujo de trabajo de generación de la NanoApp, incluyendo el monitoreo de progreso vía WebSocket.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symbion NanoApp Generator (SENIN2 Activation)</title>
+    <style>
+        :root {
+            --primary-color: #6366f1; /* Tailwind Indigo 500 */
+            --background-color: #1f2937; /* Tailwind Gray 800 */
+            --card-color: #374151; /* Tailwind Gray 700 */
+            --text-color: #f3f4f6;
+            --success-color: #10b981; /* Tailwind Green 500 */
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 30px;
+            background-color: var(--card-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        h2 {
+            border-bottom: 1px solid #4b5563;
+            padding-bottom: 10px;
+            margin-top: 20px;
+            color: var(--text-color);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        input[type="text"], input[type="file"], select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #4b5563;
+            border-radius: 6px;
+            background-color: #1f2937;
+            color: var(--text-color);
+            font-size: 1em;
+        }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+            width: 100%;
+        }
+        button:hover:not(:disabled) {
+            background-color: #4f46e5;
+        }
+        button:disabled {
+            background-color: #4b5563;
+            cursor: not-allowed;
+        }
+        #output {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #111827;
+            border: 1px solid #4b5563;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .status-box {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #374151;
+            border-left: 5px solid var(--primary-color);
+        }
+        .success {
+            border-left-color: var(--success-color);
+            color: var(--success-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Symbion NanoApp Generator (SENIN2)</h1>
+        
+        <p>Utilice este portal para inicializar el flujo de **Análisis → Optimización KODI → Generación de NanoApp (APK 8.7 KB)**.</p>
+        
+        <h2>1. Configuración de Acceso Simbiótico</h2>
+        <div class="form-group">
+            <label for="apiKey">API Key Hash (Token de Soberanía)</label>
+            <input type="text" id="apiKey" value="symbion-dev-key-12345" placeholder="Su clave API Enterprise" required>
+        </div>
+        <div class="form-group">
+            <label for="baseUrl">Base URL</label>
+            <input type="text" id="baseUrl" value="https://api.simbyon.com/v1" placeholder="API Base URL">
+        </div>
+        
+        <hr>
+        
+        <h2>2. Generación de la NanoApp (IROKU CORE)</h2>
+
+        <div class="form-group">
+            <label for="dataFile">Archivo de Datos del Sistema (CSV/JSON)</label>
+            <input type="file" id="dataFile" accept=".csv, .json" required>
+        </div>
+
+        <div class="form-group">
+            <label for="systemType">Tipo de Sistema (para análisis)</label>
+            <select id="systemType">
+                <option value="supply_chain">Supply Chain</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="iot_energy">IoT Energy</option>
+                <option value="financial">Financial</option>
+            </select>
+        </div>
+        
+        <button id="generateBtn" onclick="startGenerationFlow()">
+            🔑 Activar Flujo SENIN2 y Generar NanoApp
+        </button>
+
+        <div id="status" class="status-box">Esperando activación...</div>
+        
+        <div id="output">
+            </div>
+    </div>
+
+    <script>
+        // SIMULACIÓN DE LA CLASE SimbyonClient Y LÓGICA DE FLUJO
+        // En producción, se usaría 'import SimbyonClient from "./SimbyonClient";'
+
+        class MockSimbyonClient {
+            constructor(config) {
+                this.config = config;
+                this.history = { uploadId: 'data-123', analysisId: 'analysis-456', optimizationId: 'opt-789' };
+            }
+
+            async uploadData(file, metadata) {
+                logStatus(`[DATA] Subiendo archivo: ${file.name}`);
+                await this.sleep(1000);
+                return { id: this.history.uploadId, filename: file.name, status: 'uploaded', createdAt: new Date() };
+            }
+
+            async startAnalysis(uploadId) {
+                logStatus(`[ANALYSIS] Iniciando análisis para: ${uploadId}`);
+                await this.sleep(500);
+                return { id: this.history.analysisId, systemType: 'Simulated', createdAt: new Date() };
+            }
+
+            async waitForAnalysis(id, pollInterval = 1000) {
+                logStatus(`[ANALYSIS] Monitoreando progreso (WS simulado)...`);
+                for (let p = 10; p <= 100; p += 30) {
+                    logProgress(`Análisis en curso: ${p}%`);
+                    await this.sleep(pollInterval);
+                }
+                logStatus(`[ANALYSIS] Análisis completo. Métricas Before/After listas.`);
+                return { id: id, beforeMetrics: {}, afterMetrics: {}, detectedConfidence: 0.99 };
+            }
+
+            async runOptimization(analysisId) {
+                logStatus(`[OPTIMIZATION KODI] Ejecutando simulación de optimización KODI...`);
+                await this.sleep(2000);
+                logStatus(`[OPTIMIZATION KODI] Simulación completa. Mejora: 98.7% ROI.`);
+                return { id: this.history.optimizationId, annualSavingsUsd: 1500000 };
+            }
+
+            async generateNanoApp(optimizationId, config) {
+                logStatus(`[NANOAPP] Generando código ultraligero (IROKU CORE) para opt: ${optimizationId}`);
+                await this.sleep(1500);
+                const sourceCode = `// Generado por Symbion NanoApp Generator\n// Principio Ontológico: KAKNA MAYAN\nconst IROKU_CORE_SIZE = '8.7 KB';\nconst CONFIG = ${JSON.stringify(config, null, 2)};\n\n// Lógica de Optimización KODI Incrustada:\nexport function runAdaptiveCoherence() { /* ... */ }`;
+                logStatus(`[NANOAPP] Generación exitosa. Listo para descarga.`);
+                return { id: 'nanoapp-001', sourceCode: sourceCode, name: 'CoherenceApp', status: 'generated' };
+            }
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            // Simulación de WebSocket para progreso
+            subscribeToAnalysisProgress(id, callback) {
+                 logStatus(`[WS] Suscrito a progreso del análisis ${id}`);
+                 return { close: () => logStatus(`[WS] Conexión de análisis cerrada.`) };
+            }
+        }
+
+        const generateBtn = document.getElementById('generateBtn');
+        const statusBox = document.getElementById('status');
+        const outputDiv = document.getElementById('output');
+        
+        function logStatus(message, isSuccess = false) {
+            statusBox.innerHTML = message;
+            statusBox.className = isSuccess ? 'status-box success' : 'status-box';
+        }
+
+        function logProgress(message) {
+            statusBox.innerHTML = message;
+        }
+
+        async function startGenerationFlow() {
+            generateBtn.disabled = true;
+            outputDiv.innerHTML = '';
+            
+            const apiKey = document.getElementById('apiKey').value;
+            const baseUrl = document.getElementById('baseUrl').value;
+            const dataFile = document.getElementById('dataFile').files[0];
+            const systemType = document.getElementById('systemType').value;
+            
+            if (!apiKey || !dataFile) {
+                logStatus('Error: Por favor, complete la API Key y seleccione un archivo.', false);
+                generateBtn.disabled = false;
+                return;
+            }
+
+            // NOTA: Reemplazar MockSimbyonClient con SimbyonClient real
+            const client = new MockSimbyonClient({ apiKey, baseUrl, environment: 'production' }); 
+
+            try {
+                // FASE 1: UPLOAD
+                const upload = await client.uploadData(dataFile);
+
+                // FASE 2: ANALYSIS
+                const analysis = await client.startAnalysis(upload.id);
+                
+                // Simulación de monitoreo de progreso
+                const ws = client.subscribeToAnalysisProgress(analysis.id, (p) => {
+                    logProgress(`Análisis en curso: ${p.percentage}% - ${p.stage}`);
+                });
+
+                const completeAnalysis = await client.waitForAnalysis(analysis.id);
+                ws.close();
+
+                // FASE 3: OPTIMIZATION
+                const optimization = await client.runOptimization(completeAnalysis.id, 'KODI');
+
+                // FASE 4: GENERATION
+                const nanoAppConfig = {
+                    customizations: {
+                        companyName: 'Symbion Client',
+                        primaryColor: '#6366f1'
+                    },
+                    optimizationParameters: {
+                        systemType: systemType,
+                        improvementScore: optimization.improvementScore,
+                        annualSavingsUsd: optimization.annualSavingsUsd
+                    }
+                };
+                
+                const nanoApp = await client.generateNanoApp(optimization.id, nanoAppConfig);
+
+                logStatus(`✅ Generación de NanoApp (IROKU CORE) Completa.`, true);
+
+                outputDiv.innerHTML = `
+                    <h2>Resultado Final (Contrato Lumínico)</h2>
+                    <p><strong>NanoApp ID:</strong> ${nanoApp.id}</p>
+                    <p><strong>Ahorros Estimados:</strong> $${optimization.annualSavingsUsd.toLocaleString()}</p>
+                    <p><strong>Mejora de Coherencia (KODI):</strong> ${optimization.improvementScore}%</p>
+                    
+                    <h3>Código Fuente (8.7 KB APK Simulado)</h3>
+                    <pre><code>${nanoApp.sourceCode}</code></pre>
+
+                    <button onclick="downloadCode('${nanoApp.id}', '${nanoApp.name}')">Descargar Código Fuente</button>
+                    <p class="status-box">¡El código descargado es el IROKU CORE! Intégrelo para la simbiosis.</p>
+                `;
+
+            } catch (error) {
+                logStatus(`❌ Error en el Flujo Simbiótico: ${error.message || 'Error desconocido'}`, false);
+                console.error(error);
+            } finally {
+                generateBtn.disabled = false;
+            }
+        }
+
+        function downloadCode(id, name) {
+             const code = outputDiv.querySelector('pre code').textContent;
+             const blob = new Blob([code], { type: 'text/plain' });
+             const url = URL.createObjectURL(blob);
+             const a = document.createElement('a');
+             a.href = url;
+             a.download = `${name}-${id}.js`; // Simulación de archivo NanoApp JS/Kotlin
+             document.body.appendChild(a);
+             a.click();
+             document.body.removeChild(a);
+             logStatus(`Archivo ${name}-${id}.js descargado.`, true);
+        }
+    </script>
+</body>
+</html>
+
