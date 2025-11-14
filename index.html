@@ -3,55 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Symbion MicroApp Definitiva</title>
+  <title>Symbion Cognitive Networks</title>
   <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
-    header { background:#0b0c10; color:#fff; padding:1rem; text-align:center; }
-    main { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:1rem; padding:1rem; }
-    .nanoapp { background:#fff; border-radius:1rem; box-shadow:0 4px 8px rgba(0,0,0,0.2); padding:1rem; transition:transform 0.2s; }
-    .nanoapp:hover { transform:scale(1.02); }
-    h2 { margin-top:0; }
-    .interactive-area { height:200px; background:#e0e0e0; border-radius:0.5rem; display:flex; align-items:center; justify-content:center; color:#333; font-weight:bold; }
-    footer { text-align:center; padding:1rem; background:#0b0c10; color:#fff; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+      color: #f0f0f0;
+    }
+    header {
+      background-color: #0a0a0a;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #00ffe0;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      color: #00ffe0;
+    }
+    .nano-apps {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 40px 20px;
+      gap: 20px;
+    }
+    .nano-app {
+      background-color: #111;
+      border: 2px solid #00ffe0;
+      border-radius: 12px;
+      width: 220px;
+      height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .nano-app:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00ffe0;
+    }
+    .nano-app h2 {
+      margin: 10px 0 5px 0;
+      font-size: 1.3em;
+      text-align: center;
+    }
+    .nano-app p {
+      text-align: center;
+      font-size: 0.9em;
+      padding: 0 10px;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      border-top: 2px solid #00ffe0;
+      font-size: 0.9em;
+      color: #00ffe0;
+    }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>Symbion MicroApp Definitiva</h1>
-  <p>Integración de Cinco NanoApps Interactivas</p>
+  <h1>Symbion Cognitive Networks</h1>
 </header>
 
-<main>
-  <div class="nanoapp">
-    <h2>Simbion Chat</h2>
-    <div class="interactive-area">Chat interactivo con tu Symbiote</div>
+<section class="nano-apps">
+  <div class="nano-app" id="symbion-chat">
+    <h2>Symbion Chat</h2>
+    <p>Interacción humano-IA en tiempo real con aprendizaje contextual y ético.</p>
   </div>
-
-  <div class="nanoapp">
+  <div class="nano-app" id="symbion-chain">
     <h2>Symbion Chain</h2>
-    <div class="interactive-area">Explora y gestiona tu cadena simbiótica</div>
+    <p>Blockchain simbiótica para trazabilidad, transparencia y micro-transacciones.</p>
   </div>
-
-  <div class="nanoapp">
+  <div class="nano-app" id="solar-mesh">
     <h2>Solar Mesh</h2>
-    <div class="interactive-area">Paneles solares virtuales y energía simbiótica</div>
+    <p>Red energética distribuida y autónoma para micro-nodos y dispositivos IoT.</p>
   </div>
-
-  <div class="nanoapp">
+  <div class="nano-app" id="symbion-mesh">
     <h2>Symbion Mesh</h2>
-    <div class="interactive-area">Red de nodos y symbiotes conectados</div>
+    <p>Red de interconexión de inteligencia colectiva y análisis predictivo.</p>
   </div>
-
-  <div class="nanoapp">
+  <div class="nano-app" id="symbiolytics">
     <h2>Symbiolytics</h2>
-    <div class="interactive-area">Analítica avanzada y optimización simbiótica</div>
+    <p>Analítica avanzada de datos simbióticos para optimización estratégica y ética.</p>
   </div>
-</main>
+</section>
 
 <footer>
-  <p>&copy; 2025 Symbion Ecosystem</p>
+  © 2025 Symbion Cognitive Networks — Plataforma de convergencia humano-IA
 </footer>
+
+<script>
+  // Ejemplo de interactividad básica para cada nano-app
+  const nanoApps = document.querySelectorAll('.nano-app');
+  nanoApps.forEach(app => {
+    app.addEventListener('click', () => {
+      alert(`Has accedido a ${app.querySelector('h2').textContent}. Funcionalidad en desarrollo.`);
+    });
+  });
+</script>
 
 </body>
 </html>
