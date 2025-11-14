@@ -11,6 +11,7 @@ on:
     branches:
       - main
       - develop
+  workflow_dispatch:
 
 # ⚙️ Variables de Entorno Globales (Simulación)
 env:
