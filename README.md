@@ -41,3 +41,4 @@ Para interactuar con la API, utilice el SDK:
 
 ```bash
 npm install simbyon-client-sdk
+(test compilation)
