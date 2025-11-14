@@ -1,4 +1,3 @@
-# .github/workflows/main_ci.yml
 name: Simbyon NanoApp Generator CI/CD
 
 # 🎯 Eventos que disparan el workflow
@@ -12,6 +11,17 @@ on:
       - main
       - develop
   workflow_dispatch:
+
+# ⚙️ Variables de Entorno Globales (Simulación)
+env:
+  NODE_VERSION: '20.x'
+  PYTHON_VERSION: '3.11'
+  GO_VERSION: '1.21.x'
+  POSTGRES_HOST: localhost
+  POSTGRES_DB: simbyon_db
+
+# 👉 PUSH mínimo para despertar Actions
+# touch: workflow activated
 
 # ⚙️ Variables de Entorno Globales (Simulación)
 env:
