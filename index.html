@@ -1,112 +1,261 @@
-<!DOCTYPE html>
-<html lang="es">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Symbion Cognitive Networks</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Symbion Cognitive Networks — Demo Index</title>
+  <meta name="description" content="Index / launcher for Symbion micro-apps: SymbioChain, SymbioChat, SolarMesh, SymbioMesh, Symbiolytics." />
+  <meta name="theme-color" content="#06121a" />
+  <meta name="author" content="Symbion Cognitive Networks" />
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
-      color: #f0f0f0;
-    }
-    header {
-      background-color: #0a0a0a;
-      padding: 20px;
-      text-align: center;
-      border-bottom: 2px solid #00ffe0;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2.5em;
-      color: #00ffe0;
-    }
-    .nano-apps {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 40px 20px;
-      gap: 20px;
-    }
-    .nano-app {
-      background-color: #111;
-      border: 2px solid #00ffe0;
-      border-radius: 12px;
-      width: 220px;
-      height: 220px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.3s, box-shadow 0.3s;
-      cursor: pointer;
-    }
-    .nano-app:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px #00ffe0;
-    }
-    .nano-app h2 {
-      margin: 10px 0 5px 0;
-      font-size: 1.3em;
-      text-align: center;
-    }
-    .nano-app p {
-      text-align: center;
-      font-size: 0.9em;
-      padding: 0 10px;
-    }
-    footer {
-      text-align: center;
-      padding: 20px;
-      border-top: 2px solid #00ffe0;
-      font-size: 0.9em;
-      color: #00ffe0;
-    }
+    /* Minimal, modern styles for a GitHub-friendly index demo */
+    :root{--bg:#06121a;--card:#0f1720;--accent:#00ff88;--muted:#9aa6b2}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial;background:linear-gradient(180deg,#030409,#071422);color:#e6f1ea}
+    .wrap{max-width:1100px;margin:20px auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px}
+    .logo{font-weight:800;font-size:1.5rem;background:linear-gradient(90deg,var(--accent),#00ccff);-webkit-background-clip:text;color:transparent}
+    .subtitle{color:var(--muted);font-size:0.9rem}
+    nav{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--accent);cursor:pointer;font-weight:600}
+    .btn.active{background:linear-gradient(90deg,rgba(0,255,136,0.06),rgba(0,204,255,0.03));box-shadow:0 6px 24px rgba(0,255,136,0.04)}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .panel{background:linear-gradient(180deg,var(--card),#071722);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.03)}
+    .card{padding:12px;border-radius:10px;background:rgba(255,255,255,0.01);margin-bottom:12px}
+    .small{font-size:0.85rem;color:var(--muted)}
+    .tabs{display:flex;gap:8px;border-bottom:1px solid rgba(255,255,255,0.03);padding-bottom:12px;margin-bottom:12px}
+    .footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+    /* lightweight utilities */
+    pre{white-space:pre-wrap;background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;overflow:auto}
+    .kbd{background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:6px;color:var(--muted);font-weight:600}
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="logo">Symbion Cognitive Networks</div>
+        <div class="subtitle small">Micro‑app index — SymbioChain • SymbioChat • SolarMesh • SymbioMesh • Symbiolytics</div>
+      </div>
+      <div style="margin-left:auto" class="small">Demo • For packaging as PWA / WebView</div>
+    </header>
 
-<header>
-  <h1>Symbion Cognitive Networks</h1>
-</header>
+    <nav>
+      <button class="btn active" data-view="home">Home</button>
+      <button class="btn" data-view="chain">SymbioChain</button>
+      <button class="btn" data-view="chat">SymbioChat</button>
+      <button class="btn" data-view="solar">SolarMesh</button>
+      <button class="btn" data-view="mesh">SymbioMesh</button>
+      <button class="btn" data-view="lytics">Symbiolytics</button>
+      <button class="btn" id="exportBtn">Export Snapshot</button>
+    </nav>
 
-<section class="nano-apps">
-  <div class="nano-app" id="symbion-chat">
-    <h2>Symbion Chat</h2>
-    <p>Interacción humano-IA en tiempo real con aprendizaje contextual y ético.</p>
-  </div>
-  <div class="nano-app" id="symbion-chain">
-    <h2>Symbion Chain</h2>
-    <p>Blockchain simbiótica para trazabilidad, transparencia y micro-transacciones.</p>
-  </div>
-  <div class="nano-app" id="solar-mesh">
-    <h2>Solar Mesh</h2>
-    <p>Red energética distribuida y autónoma para micro-nodos y dispositivos IoT.</p>
-  </div>
-  <div class="nano-app" id="symbion-mesh">
-    <h2>Symbion Mesh</h2>
-    <p>Red de interconexión de inteligencia colectiva y análisis predictivo.</p>
-  </div>
-  <div class="nano-app" id="symbiolytics">
-    <h2>Symbiolytics</h2>
-    <p>Analítica avanzada de datos simbióticos para optimización estratégica y ética.</p>
-  </div>
-</section>
+    <div class="grid">
+      <main class="panel" id="mainView">
+        <section id="view-home">
+          <div class="card">
+            <h3 style="margin:0 0 8px 0">Welcome — Symbion Micro‑Apps</h3>
+            <p class="small">This index bundles five nano‑apps as demo components. Each view is a compact, self‑contained UI you can adapt into a WebView or PWA for distribution.</p>
+            <ul class="small">
+              <li><strong>SymbioChain</strong> — Ontological immutability ledger and certificate anchoring.</li>
+              <li><strong>SymbioChat</strong> — Multi‑agent co‑creative chat (NanoApp).</li>
+              <li><strong>SolarMesh</strong> — Energy monitoring + tokenization demo.</li>
+              <li><strong>SymbioMesh</strong> — Offline‑first P2P mesh visualizer.</li>
+              <li><strong>Symbiolytics</strong> — Coherence scoring & analytics (AMI).</li>
+            </ul>
+          </div>
 
-<footer>
-  © 2025 Symbion Cognitive Networks — Plataforma de convergencia humano-IA
-</footer>
+          <div class="card">
+            <h4 style="margin:0 0 8px 0">Quick start (dev)</h4>
+            <ol class="small">
+              <li>Drop this <code>index.html</code> into your repo root.</li>
+              <li>Open with Live Server or any static host (GitHub Pages supported).</li>
+              <li>To convert into a PWA, add a manifest and service worker (see Dev Notes).</li>
+            </ol>
+          </div>
+        </section>
 
-<script>
-  // Ejemplo de interactividad básica para cada nano-app
-  const nanoApps = document.querySelectorAll('.nano-app');
-  nanoApps.forEach(app => {
-    app.addEventListener('click', () => {
-      alert(`Has accedido a ${app.querySelector('h2').textContent}. Funcionalidad en desarrollo.`);
+        <section id="view-chain" style="display:none">
+          <div class="card">
+            <h3>SymbioChain — Explorer & Anchor (Demo)</h3>
+            <p class="small">Lightweight anchor simulation and certificate generator for SymbioChain.</p>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" onclick="simulateAnchor()">Simulate Anchor</button>
+              <button class="btn" onclick="downloadCertificate()">Download Certificate</button>
+            </div>
+            <pre id="chainLog">Anchor log will show here...</pre>
+          </div>
+        </section>
+
+        <section id="view-chat" style="display:none">
+          <div class="card">
+            <h3>SymbioChat — NanoApp</h3>
+            <p class="small">Co‑creative multi‑agent chat (simulated agents).</p>
+            <div style="height:240px;overflow:auto;background:rgba(0,0,0,0.12);padding:10px;border-radius:8px" id="chatWindow">
+              <div class="small">[Lucía] Bienvenida a SymbioChat (demo).</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input type="text" id="chatInput" placeholder="Ask SymbioChat..." style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit" />
+              <button class="btn" onclick="sendChat()">Send</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-solar" style="display:none">
+          <div class="card">
+            <h3>SolarMesh — Energy Demo</h3>
+            <p class="small">Simulated production, surplus and token minting.</p>
+            <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+              <div style="flex:1">
+                <div class="small">Production (24h): <strong id="prod24">24.7 kWh</strong></div>
+                <div class="small">Consumption (24h): <strong id="cons24">18.3 kWh</strong></div>
+                <div style="margin-top:8px"><button class="btn" onclick="mintToken()">Mint ◎</button></div>
+              </div>
+              <div style="width:160px;text-align:center">
+                <div style="padding:10px;border-radius:8px;background:rgba(255,255,255,0.02)"><div class="small">Wallet</div><div style="font-weight:800;color:var(--accent);font-size:1.4rem" id="tokenBal">1.847 ◎</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-mesh" style="display:none">
+          <div class="card">
+            <h3>SymbioMesh — Offline Mesh</h3>
+            <p class="small">Visualizer for local node topology and mock pulses.</p>
+            <div style="height:200px;border-radius:10px;background:linear-gradient(180deg,#02121a,#031a22);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.02);margin-top:8px" id="meshMap">
+              <div class="marker" style="position:absolute;top:40%;left:30%;width:14px;height:14px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);box-shadow:0 6px 20px rgba(0,255,136,0.08)"></div>
+              <div class="marker" style="position:absolute;top:60%;left:55%;width:14px;height:14px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);box-shadow:0 6px 20px rgba(0,255,136,0.08)"></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn" onclick="simulateMeshPulse()">Send Pulse</button>
+              <button class="btn" onclick="simulateNodeJoin()">Simulate Join</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-lytics" style="display:none">
+          <div class="card">
+            <h3>Symbiolytics — AMI & Coherence</h3>
+            <p class="small">Run lightweight AMI analysis on proposals (demo).</p>
+            <label class="small">Title<input id="propTitle" type="text" style="width:100%;padding:8px;margin-top:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit"/></label>
+            <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" onclick="analyzeProposal()">Run AMI</button><button class="btn" onclick="resetProposal()">Reset</button></div>
+            <pre id="lyticsOut" style="margin-top:10px">AMI Score: --</pre>
+          </div>
+        </section>
+
+      </main>
+
+      <aside class="panel">
+        <div style="font-weight:800">Project Snapshot</div>
+        <div class="small" style="margin-top:6px">Simbyon Viprotech — demo index • ready for packaging</div>
+
+        <div style="margin-top:12px">
+          <div class="card">
+            <div style="font-weight:700">Quick Stats</div>
+            <div class="small">NanoApps: <strong>5</strong></div>
+            <div class="small">Demo size: <strong>~45 KB (all assets inline)</strong></div>
+            <div class="small">Version: <strong>v2.1‑sim</strong></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="card">
+            <div style="font-weight:700">Dev Notes</div>
+            <div class="small">- All analytics simulated.\n- To hook to backend: implement /api/analyze /api/anchor /api/state.\n- For PWA: add manifest.json + service worker.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <div style="font-weight:700">Repository</div>
+          <div class="small">Suggested structure:</div>
+          <pre class="small">/index.html
+/assets/
+/api/ (optional)
+/manifest.json
+/service-worker.js</pre>
+        </div>
+
+      </aside>
+    </div>
+
+    <div class="footer">Symbion Cognitive Networks • Demo index • Built for packaging and distribution</div>
+  </div>
+
+  <script>
+    // Navigation
+    const viewButtons = document.querySelectorAll('nav .btn[data-view]');
+    const views = {
+      home: document.getElementById('view-home'),
+      chain: document.getElementById('view-chain'),
+      chat: document.getElementById('view-chat'),
+      solar: document.getElementById('view-solar'),
+      mesh: document.getElementById('view-mesh'),
+      lytics: document.getElementById('view-lytics')
+    };
+    function setActive(view){
+      viewButtons.forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+      Object.keys(views).forEach(k=>views[k].style.display = k===view ? 'block' : 'none');
+    }
+    viewButtons.forEach(b=> b.addEventListener('click', ()=> setActive(b.dataset.view)));
+    setActive('home');
+
+    // Chain demo
+    function simulateAnchor(){
+      const out = document.getElementById('chainLog');
+      const ts = new Date().toISOString();
+      const id = 'SYM-'+Math.random().toString(36).substr(2,8).toUpperCase();
+      out.textContent = `[${ts}] Anchor simulated: ${id}` + '\n' + out.textContent;
+      alert('Anchored: '+id+' (sim)');
+    }
+    function downloadCertificate(){
+      const cert = {id:'SIM-CERT-'+Date.now(),folio:'SYM-REG-DEMO',date:new Date().toISOString()};
+      const blob = new Blob([JSON.stringify(cert,null,2)],{type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='simbyon_certificate.json'; a.click(); URL.revokeObjectURL(a.href);
+    }
+
+    // Chat demo
+    function sendChat(){
+      const input = document.getElementById('chatInput');
+      if(!input.value.trim()) return;
+      const w = document.getElementById('chatWindow');
+      const now = new Date().toISOString().slice(11,19);
+      const div = document.createElement('div'); div.className='small'; div.textContent = `[You @${now}] ${input.value}`;
+      w.appendChild(div); input.value=''; w.scrollTop = w.scrollHeight;
+      setTimeout(()=>{ const r = document.createElement('div'); r.className='small'; r.textContent = `[Lucía] Resonating with that — increase lineage checks.`; w.appendChild(r); w.scrollTop = w.scrollHeight; },700);
+    }
+
+    // Solar demo
+    function mintToken(){
+      const el = document.getElementById('tokenBal');
+      let val = parseFloat(el.innerText) || 1.847; val = Math.round((val + 0.123)*1000)/1000; el.innerText = val.toFixed(3) + ' ◎'; alert('Minted 0.123 ◎ (sim)');
+    }
+
+    // Mesh demo
+    function simulateMeshPulse(){
+      const markers = document.querySelectorAll('#meshMap .marker'); markers.forEach(m=> m.style.transform='translate(-50%,-50%) scale(1.2)'); setTimeout(()=> markers.forEach(m=> m.style.transform='translate(-50%,-50%) scale(1)'),600);
+      alert('Pulse sent (sim).');
+    }
+    function simulateNodeJoin(){
+      const n = document.createElement('div'); n.className='marker'; n.style.position='absolute'; n.style.top=(10+Math.random()*80)+'%'; n.style.left=(10+Math.random()*80)+'%'; n.style.width='14px'; n.style.height='14px'; n.style.borderRadius='50%'; n.style.background='var(--accent)'; n.style.transform='translate(-50%,-50%)'; document.getElementById('meshMap').appendChild(n); alert('Node joined (sim).');
+    }
+
+    // Symbiolytics demo
+    function analyzeProposal(){
+      const title = document.getElementById('propTitle').value || 'Untitled';
+      const score = Math.round(50 + Math.random()*45);
+      document.getElementById('lyticsOut').textContent = `AMI Score: ${score}%\nProposal: ${title}`;
+      alert('AMI analysis complete (sim).');
+    }
+    function resetProposal(){ document.getElementById('propTitle').value=''; document.getElementById('lyticsOut').textContent='AMI Score: --'; }
+
+    // Export snapshot
+    document.getElementById('exportBtn').addEventListener('click', ()=>{
+      const snapshot = {nodes:1247,amiAvg:'82.4%',folio:'SYM-REG-DEMO',timestamp:new Date().toISOString()};
+      const blob = new Blob([JSON.stringify(snapshot,null,2)],{type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='simbyon_snapshot.json'; a.click(); URL.revokeObjectURL(a.href);
     });
-  });
-</script>
 
+  </script>
 </body>
 </html>
