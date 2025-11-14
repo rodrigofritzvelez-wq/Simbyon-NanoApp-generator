@@ -3,53 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Symbyon Cognitive Networks</title>
+  <title>Symbyon Cognitive Networks - MicroApp</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
       color: #fff;
+      overflow-x: hidden;
     }
     header {
       text-align: center;
-      padding: 1.5rem;
+      padding: 2rem;
       background: rgba(0,0,0,0.4);
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: bold;
       letter-spacing: 1px;
     }
     main {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1rem;
-      padding: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.2rem;
+      padding: 1.5rem;
     }
     .nanoapp {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 1rem;
-      min-height: 200px;
+      min-height: 250px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
     }
     .nanoapp:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
     .nanoapp h2 {
       margin: 0 0 0.5rem 0;
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       text-align: center;
     }
     .nanoapp p {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       text-align: center;
-      opacity: 0.8;
+      opacity: 0.85;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #ff6a00;
+      color: #fff;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #ff9e3b;
+    }
+    canvas {
+      border-radius: 12px;
+      width: 100%;
+      height: 150px;
+      background: rgba(0,0,0,0.1);
     }
   </style>
 </head>
@@ -59,43 +81,125 @@
     <!-- Symbion Chat -->
     <div class="nanoapp" id="symbion-chat">
       <h2>Symbion Chat</h2>
-      <p>Interfaz de comunicación simbiótica humano-IA en tiempo real.</p>
-      <!-- Aquí se integrará el componente interactivo de Chat -->
+      <p>Comunicación simbiótica humano-IA en tiempo real.</p>
+      <textarea id="chat-input" placeholder="Escribe tu mensaje..." style="width:90%; height:70px; border-radius:8px; padding:0.5rem;"></textarea>
+      <button onclick="sendChat()">Enviar</button>
+      <div id="chat-log" style="margin-top:1rem; width:90%; height:80px; overflow-y:auto; background: rgba(255,255,255,0.05); border-radius:8px; padding:0.5rem;"></div>
     </div>
 
     <!-- Symbion Chain -->
     <div class="nanoapp" id="symbion-chain">
       <h2>Symbion Chain</h2>
-      <p>Blockchain interna para validar la coherencia de procesos cognitivos.</p>
-      <!-- Aquí se integrará el ledger / visualizador de Chain -->
+      <p>Blockchain para validar coherencia de procesos cognitivos.</p>
+      <canvas id="chain-canvas"></canvas>
+      <button onclick="addBlock()">Añadir Bloque</button>
     </div>
 
     <!-- Solar Mesh -->
     <div class="nanoapp" id="solar-mesh">
       <h2>Solar Mesh</h2>
-      <p>Gestión energética y visualización de nodos solares dentro del ecosistema.</p>
-      <!-- Aquí se integrará el dashboard de Solar Mesh -->
+      <p>Gestión energética y visualización de nodos solares.</p>
+      <canvas id="solar-canvas"></canvas>
+      <button onclick="refreshSolar()">Actualizar Nodos</button>
     </div>
 
     <!-- Symbion Mesh -->
     <div class="nanoapp" id="symbion-mesh">
       <h2>Symbion Mesh</h2>
-      <p>Red de interconexión entre agentes IA para intercambio de datos simbióticos.</p>
-      <!-- Aquí se integrará la visualización de Mesh -->
+      <p>Red de interconexión entre agentes IA.</p>
+      <canvas id="mesh-canvas"></canvas>
+      <button onclick="updateMesh()">Refrescar Conexiones</button>
     </div>
 
     <!-- Symbiolytics -->
     <div class="nanoapp" id="symbiolytics">
       <h2>Symbiolytics</h2>
       <p>Analítica avanzada para medir coherencia y evolución del sistema.</p>
-      <!-- Aquí se integrarán los gráficos y reportes dinámicos -->
+      <canvas id="analytics-canvas"></canvas>
+      <button onclick="runAnalytics()">Ejecutar Analítica</button>
     </div>
   </main>
 
   <script>
-    // Aquí se podrán cargar los scripts de cada NanoApp
-    // Ejemplo: Symbion Chat, Chain, Mesh, Solar Mesh, Symbiolytics
-    console.log('MicroApp Symbyon lista para NanoApps.');
+    // ------------------ Symbion Chat ------------------
+    function sendChat() {
+      const input = document.getElementById('chat-input');
+      const log = document.getElementById('chat-log');
+      if(input.value.trim() !== '') {
+        const msg = document.createElement('div');
+        msg.textContent = 'Tú: ' + input.value;
+        log.appendChild(msg);
+        // Simulación de respuesta IA
+        const iaMsg = document.createElement('div');
+        iaMsg.textContent = 'IA: ' + input.value.split('').reverse().join(''); // solo ejemplo
+        log.appendChild(iaMsg);
+        log.scrollTop = log.scrollHeight;
+        input.value = '';
+      }
+    }
+
+    // ------------------ Symbion Chain ------------------
+    const chainCanvas = document.getElementById('chain-canvas');
+    const chainCtx = chainCanvas.getContext('2d');
+    let blocks = [];
+
+    function addBlock() {
+      const y = blocks.length * 20 + 10;
+      blocks.push('Bloque ' + (blocks.length + 1));
+      chainCtx.clearRect(0,0,chainCanvas.width,chainCanvas.height);
+      chainCtx.fillStyle = '#ff6a00';
+      blocks.forEach((block,i)=>{
+        chainCtx.fillRect(10, i*25 + 10, 100, 20);
+        chainCtx.fillStyle = '#fff';
+        chainCtx.fillText(block,i*10 + 15, i*25 + 25);
+        chainCtx.fillStyle = '#ff6a00';
+      });
+    }
+
+    // ------------------ Solar Mesh ------------------
+    const solarCanvas = document.getElementById('solar-canvas');
+    const solarCtx = solarCanvas.getContext('2d');
+    function refreshSolar() {
+      solarCtx.clearRect(0,0,solarCanvas.width,solarCanvas.height);
+      for(let i=0;i<5;i++){
+        solarCtx.beginPath();
+        solarCtx.arc(Math.random()*solarCanvas.width, Math.random()*solarCanvas.height, 15, 0, Math.PI*2);
+        solarCtx.fillStyle = '#FFD700';
+        solarCtx.fill();
+      }
+    }
+
+    // ------------------ Symbion Mesh ------------------
+    const meshCanvas = document.getElementById('mesh-canvas');
+    const meshCtx = meshCanvas.getContext('2d');
+    function updateMesh() {
+      meshCtx.clearRect(0,0,meshCanvas.width,meshCanvas.height);
+      for(let i=0;i<8;i++){
+        for(let j=i+1;j<8;j++){
+          meshCtx.beginPath();
+          meshCtx.moveTo(Math.random()*meshCanvas.width, Math.random()*meshCanvas.height);
+          meshCtx.lineTo(Math.random()*meshCanvas.width, Math.random()*meshCanvas.height);
+          meshCtx.strokeStyle = '#00ffff';
+          meshCtx.stroke();
+        }
+      }
+    }
+
+    // ------------------ Symbiolytics ------------------
+    const analyticsCanvas = document.getElementById('analytics-canvas');
+    const analyticsCtx = analyticsCanvas.getContext('2d');
+    function runAnalytics() {
+      analyticsCtx.clearRect(0,0,analyticsCanvas.width,analyticsCanvas.height);
+      for(let i=0;i<10;i++){
+        analyticsCtx.fillStyle = `hsl(${Math.random()*360},80%,60%)`;
+        analyticsCtx.fillRect(i*30, analyticsCanvas.height-Math.random()*analyticsCanvas.height, 20, Math.random()*analyticsCanvas.height);
+      }
+    }
+
+    // Inicialización
+    refreshSolar();
+    updateMesh();
+    runAnalytics();
   </script>
 </body>
 </html>
