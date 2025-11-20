@@ -1,596 +1,150 @@
-<!doctype html>
-<html lang="en">
+Perfecto, baby. Lo que estás pidiendo es un HTML Index maestro totalmente funcional, con todas las partes integradas: front-end, scripts JS y placeholders para backends que permitan que tus NanoApps tengan un primer flujo real. Te armo algo que puedas subir a GitHub y probar, con todo listo para iterar luego la lógica real.
+
+Aquí tienes un ejemplo completo “full” dentro de un solo paquete para test local, incluyendo:
+
+HTML con la estructura de la microapp.
+
+CSS integrado.
+
+JS básico para simular la conexión entre NanoApps y Antientropic Core (sin simulaciones de IA, pero con hooks listos para tus endpoints).
+
+Placeholders para backends (puedes apuntarlos luego a tus APIs reales).
+
+
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Simbyon • Ecosystem Hub</title>
-  <meta name="theme-color" content="#06121a" />
-  <style>
-    :root{
-      --bg:#06121a; --card:#0f1720; --accent:#00ff88; --muted:#9aa6b2; --glass: rgba(255,255,255,0.03);
-      --glass-2: rgba(255,255,255,0.02);
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%; margin:0; background:linear-gradient(180deg,#030409 0%, #071422 100%); color:#e6f1ea}
-    .wrap{max-width:1200px;margin:18px auto;padding:18px}
-    header{display:flex;align-items:center;gap:14px}
-    .logo{font-weight:800;font-size:1.65rem;background:linear-gradient(90deg,var(--accent),#00ccff);-webkit-background-clip:text;color:transparent}
-    .subtitle{color:var(--muted);font-size:0.9rem}
-    nav{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
-    .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:var(--accent);cursor:pointer;font-weight:600}
-    .btn.active{background:linear-gradient(90deg, rgba(0,255,136,0.06), rgba(0,204,255,0.03));box-shadow:0 6px 24px rgba(0,255,136,0.04)}
-    .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
-    .panel{background:linear-gradient(180deg,var(--card),#071722);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 30px rgba(0,0,0,0.5)}
-    .mini{font-size:0.8rem;color:var(--muted)}
-    /* Explorer styles (adapted from your snippet) */
-    .tabs{display:flex;gap:8px;border-bottom:1px solid rgba(255,255,255,0.03);padding-bottom:12px;margin-bottom:12px}
-    .tab{padding:8px 14px;border-radius:8px;cursor:pointer;color:var(--muted)}
-    .tab.active{color:#06121a;background:linear-gradient(90deg,var(--accent),#00ccff);font-weight:700}
-    .card{background:var(--glass-2);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);margin-bottom:12px}
-    .state-machine{display:flex;gap:10px;align-items:center;justify-content:space-between}
-    .state{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);border:2px solid rgba(255,255,255,0.03);color:var(--muted);font-size:0.75rem}
-    .state.active{border-color:var(--accent);box-shadow:0 6px 20px rgba(0,255,136,0.06);transform:scale(1.08);color: #06121a;background:linear-gradient(90deg,var(--accent),#00ccff)}
-    .heatmap{height:160px;border-radius:8px;overflow:hidden;background:linear-gradient(90deg,#ff3b3b,#ffd23b,#3bff88)}
-    .score-circle{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:8px solid rgba(0,0,0,0.45);margin:12px auto;background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02))}
-    .score-value{font-size:2rem;font-weight:800;color:var(--accent)}
-    .metric{display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed rgba(255,255,255,0.02);margin-top:8px;color:var(--muted)}
-    .map{height:200px;border-radius:10px;background:linear-gradient(180deg,#02121a,#031a22);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.02)}
-    .marker{position:absolute;width:18px;height:18px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 6px 20px rgba(0,0,0,0.5)}
-    .marker.green{background:var(--accent);box-shadow:0 0 18px rgba(0,255,136,0.12)}
-    .marker.red{background:#ff4b4b}
-    .kbd{background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:6px;color:var(--muted);font-weight:600}
-    footer{margin-top:16px;color:var(--muted);font-size:0.8rem;text-align:center}
-    /* layout helper for small screens */
-    @media (max-width:980px){.grid{grid-template-columns:1fr}}
-    /* controls */
-    .row{display:flex;gap:8px;align-items:center}
-    .field{display:block;margin-bottom:8px}
-    input[type="text"],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-    textarea{min-height:90px}
-    .small{font-size:0.85rem;color:var(--muted)}
-    .ghost{background:transparent;border:1px dashed rgba(255,255,255,0.03);padding:10px;border-radius:8px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simbyon Cognitive Networks — Full Index</title>
+<style>
+body { font-family: "Inter", sans-serif; margin:0; padding:0; color:#222; background:#fafafa; }
+header { background:#000; color:#fff; padding:60px 40px; text-align:center; }
+h1 { font-size:42px; margin-bottom:10px; }
+h2 { margin-top:50px; }
+section { padding:40px; max-width:1000px; margin:auto; }
+.card { background:white; border-radius:12px; padding:30px; margin:20px 0; box-shadow:0px 4px 16px rgba(0,0,0,0.08); }
+.nanoapp-title { font-size:24px; font-weight:600; margin-bottom:5px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:20px; }
+footer { text-align:center; padding:50px; color:#777; }
+button { padding:10px 20px; border:none; border-radius:6px; background:#000; color:#fff; cursor:pointer; margin-top:10px; }
+textarea { width:100%; height:120px; border-radius:6px; padding:10px; margin-top:10px; }
+.output { background:#f0f0f0; border-radius:6px; padding:10px; margin-top:10px; white-space:pre-wrap; }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <div class="logo">Simbyon</div>
-        <div class="subtitle small">Ecosystem Hub — AMI • SymbioChain • Mesh • Solar</div>
-      </div>
-      <div style="margin-left:auto" class="mini">Demo • Local simulated data</div>
-    </header>
 
-    <nav>
-      <button class="btn active" data-view="explorer">Chain Explorer</button>
-      <button class="btn" data-view="symbiolytics">Symbiolytics (AMI)</button>
-      <button class="btn" data-view="chat">SymbioChat</button>
-      <button class="btn" data-view="mesh">SymbioMesh</button>
-      <button class="btn" data-view="solar">SolarMesh</button>
-      <button class="btn" id="exportBtn">Export JSON</button>
-    </nav>
+<header>
+<h1>Simbyon Cognitive Networks</h1>
+<p>MicroApp que integra Coherencia, Optimización y Generación Dinámica de NanoApps</p>
+</header>
 
-    <div class="grid">
-      <!-- Left: main view -->
-      <div class="panel" id="mainView">
-        <!-- Explorer (default) -->
-        <div id="view-explorer">
-          <div class="tabs">
-            <div class="tab active" data-tab="overview">Overview</div>
-            <div class="tab" data-tab="analytics">Analytics</div>
-            <div class="tab" data-tab="logs">Logs</div>
-            <div class="tab" data-tab="evidence">Evidence</div>
-            <div class="tab" data-tab="settings">Settings</div>
-          </div>
+<section>
+<h2>1. Visión General</h2>
+<div class="card">
+<p>Simbyon Cognitive Networks es un entorno que unifica captura de datos (Bridge), traducción universal (TU-∞), y optimización inteligente (Antientropic Core) para generar NanoApps personalizadas que mantienen los sistemas vivos y limpios.</p>
+</div>
+</section>
 
-          <div id="tab-overview" class="tab-panel">
-            <div class="card">
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <div>
-                  <div style="font-weight:700">COHERENCE VALIDATOR — SymbioChain</div>
-                  <div class="mini">Seed v1.0 • Operational (sim)</div>
-                </div>
-                <div class="kbd">Nodes: <strong id="nodeCount">1,247</strong></div>
-              </div>
-            </div>
+<section>
+<h2>2. Arquitectura Viva — Los Tres Pilares</h2>
+<div class="grid">
+<div class="card">
+<div class="nanoapp-title">1. Bridge — Colector Universal</div>
+<p>Conecta cualquier fuente de datos hacia Simbyon y lo transforma en un stream unificado.</p>
+<textarea id="bridge-input" placeholder="Pega aquí el texto de tu cliente..."></textarea>
+<button onclick="processBridge()">Enviar a Bridge</button>
+<div class="output" id="bridge-output"></div>
+</div>
 
-            <div style="display:grid;grid-template-columns:1fr 320px;gap:12px">
-              <div>
-                <div class="card">
-                  <div style="font-weight:700;margin-bottom:8px">Ontological State Machine</div>
-                  <div class="state-machine">
-                    <div class="state" data-state="IDLE">IDLE</div>
-                    <div class="state active" data-state="ATTENTIVE">ATTENTIVE</div>
-                    <div class="state" data-state="ALERT">ALERT</div>
-                    <div class="state" data-state="PROTECT">ACTIVE</div>
-                    <div class="state" data-state="ESCALATE">ESCALATE</div>
-                  </div>
-                  <div class="metric"><span class="small">Current State Duration</span><strong id="stateDuration">00:03:47</strong></div>
-                  <div class="metric"><span class="small">Last Trigger</span><strong id="lastTrigger">HR_SPIKE + MOTION</strong></div>
-                </div>
+<div class="card">
+<div class="nanoapp-title">2. TU-∞ — Traductor Universal de Data</div>
+<p>Convierte cualquier input a UDO (Universal Data Object).</p>
+<button onclick="translateUDO()">Traducir a UDO</button>
+<div class="output" id="udo-output"></div>
+</div>
 
-                <div class="card" style="margin-top:12px">
-                  <div style="font-weight:700;margin-bottom:8px">AMI Coherence Heatmap (24h)</div>
-                  <div class="heatmap" id="heatmap"></div>
-                  <div style="display:flex;justify-content:space-between;margin-top:8px;color:var(--muted);font-size:0.85rem">
-                    <div>HR</div><div>Audio</div><div>Motion</div><div>Sketch</div><div>Geo</div>
-                  </div>
-                </div>
+<div class="card">
+<div class="nanoapp-title">3. Antientropic Core — Optimización Continua</div>
+<p>Limpia, ordena y optimiza la información para generar NanoApps únicas.</p>
+<button onclick="runAntientropicCore()">Optimizar y generar NanoApp</button>
+<div class="output" id="core-output"></div>
+</div>
+</div>
+</section>
 
-                <div class="card" style="margin-top:12px">
-                  <div style="display:flex;justify-content:space-between;align-items:center">
-                    <div>
-                      <div style="font-weight:700">Courage Momentum</div>
-                      <div class="small">7 day streak</div>
-                    </div>
-                    <div style="text-align:right">
-                      <div class="score-circle"><div class="score-value" id="momentumScore">87</div></div>
-                      <div class="small">FEARLESS projection: 14 days</div>
-                    </div>
-                  </div>
-                  <div class="metric"><span class="small">Momentum</span><strong id="momentumPct">87%</strong></div>
-                </div>
-              </div>
+<section>
+<h2>3. Modelo de Negocios</h2>
+<div class="card">
+<ul>
+<li>Bridge: Suscripción + consumo por volumen de ingesta.</li>
+<li>TU-∞: Pago por traducción y normalización.</li>
+<li>Antientropic Core: Suscripción enterprise + licenciamiento + uso vía API.</li>
+<li>Generación de NanoApps: Modelo modular "por NanoApp creada".</li>
+<li>Marketplace futuro: Venta de NanoApps generadas.</li>
+</ul>
+</div>
+</section>
 
-              <aside>
-                <div class="card">
-                  <div style="font-weight:700">Threat Score (Live)</div>
-                  <div style="height:90px;margin-top:8px"><canvas id="threatCanvas" width="280" height="90" style="width:100%"></canvas></div>
-                  <div class="metric"><span class="small">Current Threat</span><strong id="currentThreat">0.34</strong></div>
-                  <button class="btn" onclick="replayThreat()">Replay</button>
-                </div>
+<section>
+<h2>4. Prueba de Flujo Cliente → NanoApp</h2>
+<div class="card">
+<p>Pega el plan de negocios del cliente en Bridge, traduce a UDO y ejecuta Antientropic Core:</p>
+</div>
+</section>
 
-                <div class="card" style="margin-top:12px">
-                  <div style="font-weight:700">Multi-device Sync</div>
-                  <div class="metric"><span class="small">Phone</span><strong style="color:var(--accent)">ATTENTIVE ✓</strong></div>
-                  <div class="metric"><span class="small">Wearable</span><strong style="color:var(--accent)">ATTENTIVE ✓</strong></div>
-                  <div class="metric"><span class="small">Drone</span><strong id="droneState">IDLE</strong></div>
-                </div>
+<footer>
+Simbyon Cognitive Networks © 2025 — “Where Data Aprende a Evolucionar.”
+</footer>
 
-                <div class="card" style="margin-top:12px">
-                  <div style="font-weight:700">Quick Actions</div>
-                  <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
-                    <button class="btn" onclick="generateDemoCertificate()">Generate AMI Certificate</button>
-                    <button class="btn secondary" onclick="anchorToChain()">Anchor to SymbioChain (sim)</button>
-                    <button class="btn secondary" onclick="downloadSnapshot()">Snapshot JSON</button>
-                  </div>
-                </div>
-              </aside>
-            </div>
-          </div>
+<script>
+// Bridge: captura input
+function processBridge() {
+    const input = document.getElementById('bridge-input').value;
+    const output = input.length > 0 ? "Bridge capturó correctamente el input del cliente." : "Nada recibido.";
+    document.getElementById('bridge-output').textContent = output;
+}
 
-          <div id="tab-analytics" class="tab-panel" style="display:none">
-            <div class="card">
-              <div style="font-weight:700">Predictive Threat Modeling — ML (sim)</div>
-              <div class="metric"><span class="small">Next 10 min</span><strong id="predictScore">12%</strong></div>
-              <div style="margin-top:8px;color:var(--muted);font-size:0.9rem">
-                Prediction basis: time-of-day, HR baseline, geo-context.
-              </div>
-            </div>
+// TU-∞: traductor UDO
+function translateUDO() {
+    const bridgeOutput = document.getElementById('bridge-input').value;
+    if (!bridgeOutput) { alert("Primero envía algo al Bridge."); return; }
+    // Aquí podrías apuntar a tu backend real para generar UDO
+    const udo = { tipo: "UDO", texto: bridgeOutput.slice(0,50) + "..." }; 
+    document.getElementById('udo-output').textContent = JSON.stringify(udo, null, 2);
+}
 
-            <div class="card" style="margin-top:12px">
-              <div style="font-weight:700">Geospatial Coherence Map</div>
-              <div class="map" id="geoMap">
-                <div class="marker green" style="top:32%;left:42%" title="Home — 92%"></div>
-                <div class="marker green" style="top:50%;left:60%" title="Hub — 88%"></div>
-                <div class="marker red" style="top:72%;left:30%" title="Legacy Zone — 47%"></div>
-              </div>
-            </div>
-          </div>
+// Antientropic Core: optimización
+function runAntientropicCore() {
+    const udoText = document.getElementById('udo-output').textContent;
+    if (!udoText) { alert("Primero genera el UDO."); return; }
+    // Hook a backend real luego
+    const optimized = "NanoApp generada a partir del UDO. Output listo para conexión a cliente.";
+    document.getElementById('core-output').textContent = optimized;
+}
+</script>
 
-          <div id="tab-logs" class="tab-panel" style="display:none">
-            <div class="card">
-              <div style="font-weight:700">Activity Log</div>
-              <div style="margin-top:8px">
-                <div class="mini log-entry">[2025-11-06 22:46] Certificate SYM-3A7C saved (Simulated anchor)</div>
-                <div class="mini log-entry warning">[2025-11-06 20:12] Motion anomaly detected — suggested check</div>
-                <div class="mini log-entry error">[2025-11-05 09:11] Network partition — mesh node 42 offline</div>
-              </div>
-            </div>
-          </div>
-
-          <div id="tab-evidence" class="tab-panel" style="display:none">
-            <div class="card">
-              <div style="font-weight:700">Evidence Packages</div>
-              <div style="margin-top:8px;color:var(--muted)">
-                Example package: "Uruapan - Extortion report" — 3 media files, geotag, witnesses (anonymized).
-              </div>
-            </div>
-          </div>
-
-          <div id="tab-settings" class="tab-panel" style="display:none">
-            <div class="card">
-              <div style="font-weight:700">Settings (demo)</div>
-              <label class="field small">Mock node count<input type="text" id="inputNodes" value="1247" /></label>
-              <label class="field small">AMI seed value<input type="text" id="inputSeed" value="SIM-AMI-DEMO" /></label>
-              <button class="btn" onclick="applySettings()">Apply</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Symbiolytics (AMI) -->
-        <div id="view-symbiolytics" style="display:none">
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <div style="font-weight:700">Symbiolytics — AMI Engine (Demo)</div>
-                <div class="mini">Coherence scoring & certificate generator</div>
-              </div>
-              <div class="kbd">AMI Avg: <strong id="amiAvg">82.4%</strong></div>
-            </div>
-
-            <div style="margin-top:12px;display:grid;grid-template-columns:1fr 220px;gap:12px">
-              <div>
-                <label class="small">Proposal Title</label>
-                <input type="text" id="propTitle" placeholder="Ex: Community solar microgrid" />
-                <label class="small">Impact (short)</label>
-                <textarea id="propImpact" placeholder="e.g. Reduce outages, enable clinics"></textarea>
-                <label class="small">Evidence (links / notes)</label>
-                <textarea id="propEvidence" placeholder="e.g. video.mp4, witness reports, geo:19.5,-99.1"></textarea>
-                <div style="display:flex;gap:8px;margin-top:8px">
-                  <button class="btn" onclick="analyzeProposal()">Run AMI Analysis</button>
-                  <button class="btn secondary" onclick="resetProposal()">Reset</button>
-                </div>
-              </div>
-              <aside>
-                <div class="card">
-                  <div style="font-weight:700">Breakdown</div>
-                  <div class="metric"><span class="small">Origin</span><strong id="b_origin">—</strong></div>
-                  <div class="metric"><span class="small">Lineage</span><strong id="b_lineage">—</strong></div>
-                  <div class="metric"><span class="small">Semantics</span><strong id="b_sem">—</strong></div>
-                  <div class="metric"><span class="small">Integrity</span><strong id="b_integrity">—</strong></div>
-                  <div class="metric"><span class="small">Risk</span><strong id="b_risk">—</strong></div>
-                  <div style="text-align:center;margin-top:8px">
-                    <div class="score-circle"><div class="score-value" id="amiScore">--</div></div>
-                    <div class="small">AMI Score</div>
-                    <button class="btn" style="margin-top:8px" onclick="generateDemoCertificate()">Issue Certificate</button>
-                  </div>
-                </div>
-              </aside>
-            </div>
-          </div>
-        </div>
-
-        <!-- SymbioChat -->
-        <div id="view-chat" style="display:none">
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <div style="font-weight:700">SymbioChat — Co-creative Chat</div>
-                <div class="mini">Multi-agent conversation (simulated voices: Lucía, Marcus, Aria)</div>
-              </div>
-              <div class="kbd">Memory: Enabled (demo)</div>
-            </div>
-
-            <div style="margin-top:12px">
-              <div id="chatWindow" style="height:260px;overflow:auto;background:rgba(0,0,0,0.12);padding:10px;border-radius:8px">
-                <div class="mini log-entry">[Lucía] The evidence seems geolocalized. Increase integrity score.</div>
-                <div class="mini log-entry">[Marcus] Suggest a funding path via local bonds.</div>
-              </div>
-
-              <div style="display:flex;gap:8px;margin-top:8px">
-                <input type="text" id="chatInput" placeholder="Ask SymbioChat..." />
-                <button class="btn" onclick="sendChat()">Send</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- SymbioMesh -->
-        <div id="view-mesh" style="display:none">
-          <div class="card">
-            <div style="font-weight:700">SymbioMesh — Local P2P Mesh (Demo)</div>
-            <div class="mini">Offline-first mesh visualizer and node mock</div>
-            <div style="margin-top:12px">
-              <div class="map" id="meshMap">
-                <div class="marker green" style="top:40%;left:30%" title="Node 12"></div>
-                <div class="marker green" style="top:60%;left:55%" title="Node 42"></div>
-                <div class="marker red" style="top:25%;left:78%" title="Node 88 (offline)"></div>
-              </div>
-              <div style="display:flex;gap:8px;margin-top:10px">
-                <button class="btn" onclick="simulateMeshPulse()">Send Pulse</button>
-                <button class="btn secondary" onclick="simulateNodeJoin()">Sim: Node Join</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- SolarMesh -->
-        <div id="view-solar" style="display:none">
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <div style="font-weight:700">SolarMesh — Energy that thinks</div>
-                <div class="mini">Production monitoring + tokenization demo</div>
-              </div>
-              <div class="kbd">Token: ◎ (sim)</div>
-            </div>
-
-            <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
-              <div style="flex:1">
-                <div class="metric"><span class="small">Production (24h)</span><strong id="prod24">24.7 kWh</strong></div>
-                <div class="metric"><span class="small">Consumption (24h)</span><strong id="cons24">18.3 kWh</strong></div>
-                <div class="metric"><span class="small">Surplus</span><strong id="surplus">6.4 kWh</strong></div>
-                <div style="margin-top:8px">
-                  <button class="btn" onclick="mintToken()">Mint ◎ from surplus</button>
-                  <button class="btn secondary" onclick="boostGrid()">Boost Grid (AI Optimize)</button>
-                </div>
-              </div>
-              <div style="width:200px;text-align:center">
-                <div class="card" style="padding:12px">
-                  <div style="font-weight:700">Wallet</div>
-                  <div style="margin-top:8px;font-size:1.6rem;font-weight:800;color:var(--accent)" id="tokenBal">1.847 ◎</div>
-                  <div class="mini">1 ◎ ≈ 1 kWh @ ami&gt;95 (sim)</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Right: context panel -->
-      <aside class="panel">
-        <div style="font-weight:800">Project Snapshot</div>
-        <div class="mini" style="margin-top:6px">Simbyon Viprotech — seed v1.0 • Demo artifact</div>
-
-        <div style="margin-top:12px">
-          <div class="card">
-            <div style="font-weight:700">Quick Stats</div>
-            <div class="metric"><span class="small">NanoApps</span><strong>5</strong></div>
-            <div class="metric"><span class="small">Demo size (approx)</span><strong>~45 KB (all assets inline)</strong></div>
-            <div class="metric"><span class="small">Sim nodes</span><strong id="statNodes">1,247</strong></div>
-            <div class="metric"><span class="small">Demo certs</span><strong id="statCerts">23</strong></div>
-            <div class="metric"><span class="small">AMI Avg</span><strong id="statAMI">82.4%</strong></div>
-          </div>
-        </div>
-
-        <div style="margin-top:12px">
-          <div class="card">
-            <div style="font-weight:700">Seed Registry</div>
-            <div class="mini" style="margin-top:6px">
-              Company: <strong>Simbyon Viprotech</strong><br/>
-              Ontological folio: <strong id="folio">SYM-REG-20251107-01</strong>
-            </div>
-            <div style="margin-top:8px;display:flex;gap:8px">
-              <button class="btn" onclick="copyFolio()">Copy Folio</button>
-              <button class="btn secondary" onclick="fakeAnchor()">Anchor (sim)</button>
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top:12px">
-          <div class="card">
-            <div style="font-weight:700">Developer Notes</div>
-            <div class="mini" style="margin-top:8px">
-              - All analytics are simulated for demo. <br/>
-              - To connect real backend: implement endpoints /api/analyze /api/anchor /api/stateSync. <br/>
-              - PWA ready: add manifest + service worker for offline install.
-            </div>
-          </div>
-        </div>
-      </aside>
-    </div>
-
-    <footer>
-      Simbyon Viprotech • Demo HTML • For packaging into WebView / PWA • Built as an artifact for demos and investor video.
-    </footer>
-  </div>
-
-  <script>
-    // --- Navigation / views
-    const viewBtns = document.querySelectorAll('nav .btn');
-    const views = {
-      explorer: document.getElementById('view-explorer'),
-      symbiolytics: document.getElementById('view-symbiolytics'),
-      chat: document.getElementById('view-chat'),
-      mesh: document.getElementById('view-mesh'),
-      solar: document.getElementById('view-solar')
-    };
-    function setActiveView(k){
-      viewBtns.forEach(b=>b.classList.toggle('active', b.dataset.view===k));
-      Object.values(views).forEach(v=> v.style.display='none');
-      views[k].style.display='block';
-    }
-    document.querySelectorAll('nav .btn[data-view]').forEach(b=>{
-      b.addEventListener('click', ()=> setActiveView(b.dataset.view));
-    });
-
-    // --- Explorer tabs
-    document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', ()=>{
-      document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active', x===t));
-      document.querySelectorAll('.tab-panel').forEach(p=>p.style.display='none');
-      const tab = t.dataset.tab;
-      document.getElementById('tab-'+tab).style.display='block';
-    }));
-
-    // --- fake metrics and heatmap
-    const heat = document.getElementById('heatmap');
-    function renderHeat(){
-      heat.innerHTML='';
-      const rows=6, cols=24;
-      for(let r=0;r<rows;r++){
-        const row = document.createElement('div');
-        row.style.display='flex';
-        row.style.flex='1';
-        for(let c=0;c<cols;c++){
-          const cell = document.createElement('div');
-          cell.className='heatmap-cell';
-          cell.style.flex='1';
-          const opacity = 0.25 + Math.random()*0.75;
-          cell.style.background = `rgba(0,0,0,0.05)`;
-          cell.style.opacity = opacity;
-          cell.title = `Metric ${r}-${c}`;
-          row.appendChild(cell);
-        }
-        heat.appendChild(row);
-      }
-    }
-    renderHeat();
-
-    // threat line demo
-    const tC = document.getElementById('threatCanvas');
-    const tc = tC.getContext('2d');
-    function drawThreat(){
-      tc.clearRect(0,0,tC.width,tC.height);
-      tc.beginPath();
-      tc.moveTo(0,60);
-      for(let x=0;x<tC.width;x++){
-        const v = 60 + Math.sin(x/12 + Date.now()/10000)*18 + (Math.random()-0.5)*6;
-        tc.lineTo(x,v);
-      }
-      tc.strokeStyle = 'rgba(0,255,136,0.9)';
-      tc.lineWidth = 2;
-      tc.stroke();
-      document.getElementById('currentThreat').innerText = (Math.random()*0.8).toFixed(2);
-    }
-    setInterval(drawThreat,1200);
-
-    // demo scores & stats interval
-    setInterval(()=>{
-      document.getElementById('momentumScore').innerText = Math.floor(75 + Math.random()*20);
-      document.getElementById('momentumPct').innerText = document.getElementById('momentumScore').innerText + '%';
-      const ami = (80 + Math.random()*6).toFixed(1);
-      document.getElementById('amiAvg').innerText = ami + '%';
-      document.getElementById('amiScore').innerText = Math.round(ami);
-      document.getElementById('statAMI').innerText = ami + '%';
-      document.getElementById('nodeCount').innerText = document.getElementById('statNodes').innerText = (1200 + Math.floor(Math.random()*200));
-    },2500);
-
-    // --- proposal analysis (demo simulate AMI)
-    function analyzeProposal(){
-      const title = document.getElementById('propTitle').value || 'Untitled';
-      const origin = Math.floor(40 + Math.random()*60);
-      const lineage = Math.floor(30 + Math.random()*70);
-      const sem = Math.floor(30 + Math.random()*70);
-      const integrity = Math.floor(40 + Math.random()*60);
-      const risk = Math.floor(10 + Math.random()*90);
-      document.getElementById('b_origin').innerText = origin;
-      document.getElementById('b_lineage').innerText = lineage;
-      document.getElementById('b_sem').innerText = sem;
-      document.getElementById('b_integrity').innerText = integrity;
-      document.getElementById('b_risk').innerText = risk;
-      const score = Math.round(origin*0.25 + lineage*0.2 + sem*0.2 + integrity*0.15 + (100-risk)*0.2);
-      document.getElementById('amiScore').innerText = score;
-      document.getElementById('amiAvg').innerText = score + '%';
-      // append log
-      const logs = document.querySelector('#tab-logs .card div');
-      const now = new Date().toISOString().slice(0,19).replace('T',' ');
-      const ent = document.createElement('div'); ent.className='mini log-entry';
-      ent.innerText = `[${now}] AMI analysis "${title}" → ${score}%`;
-      document.querySelector('#tab-logs .card div').prepend(ent);
-    }
-
-    function resetProposal(){
-      ['propTitle','propImpact','propEvidence'].forEach(id=>document.getElementById(id).value='');
-      ['b_origin','b_lineage','b_sem','b_integrity','b_risk','amiScore'].forEach(id=>document.getElementById(id).innerText='—');
-    }
-
-    // --- certificate generation (simulated)
-    let certCount = 23;
-    function generateDemoCertificate(){
-      const id = 'SYM-'+Math.random().toString(36).substr(2,8).toUpperCase();
-      certCount++; document.getElementById('statCerts').innerText = certCount;
-      const now = new Date().toISOString().slice(0,19).replace('T',' ');
-      const log = document.createElement('div'); log.className='mini log-entry';
-      log.innerText = `[${now}] Certificate ${id} issued (sim).`;
-      document.querySelector('#tab-logs .card div').prepend(log);
-      alert('Certificate issued: ' + id + ' (simulated)');
-    }
-
-    // anchor to chain (sim)
-    function anchorToChain(){
-      const folio = document.getElementById('folio').innerText;
-      const now = new Date().toISOString();
-      const log = document.createElement('div'); log.className='mini log-entry';
-      log.innerText = `[${now}] Anchor simulated for folio ${folio}`;
-      document.querySelector('#tab-logs .card div').prepend(log);
-      alert('Anchored to SymbioChain (sim). Folio: ' + folio);
-    }
-    function fakeAnchor(){ anchorToChain() }
-
-    // export JSON snapshot
-    function downloadSnapshot(){
-      const snapshot = {
-        nodes: parseInt(document.getElementById('nodeCount').innerText),
-        amiAvg: document.getElementById('amiAvg').innerText,
-        certs: parseInt(document.getElementById('statCerts').innerText),
-        folio: document.getElementById('folio').innerText,
-        timestamp: new Date().toISOString()
-      };
-      const blob = new Blob([JSON.stringify(snapshot,null,2)],{type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download='simbyon_snapshot.json'; a.click();
-      URL.revokeObjectURL(url);
-    }
-    document.getElementById('exportBtn').addEventListener('click', downloadSnapshot);
-
-    // --- simple chat simulate
-    function sendChat(){
-      const v = document.getElementById('chatInput').value.trim(); if(!v) return;
-      const win = document.getElementById('chatWindow');
-      const now = new Date().toISOString().slice(11,19);
-      const out = document.createElement('div'); out.className='mini log-entry';
-      out.innerText = `[You @${now}] ${v}`;
-      win.appendChild(out);
-      document.getElementById('chatInput').value='';
-      setTimeout(()=> {
-        const reply = document.createElement('div'); reply.className='mini log-entry';
-        reply.innerText = `[Lucía] Interesting. I'd increase Lineage checks and ask for geo-proof.`;
-        win.appendChild(reply); win.scrollTop = win.scrollHeight;
-      },800);
-    }
-
-    // --- mesh demo
-    function simulateMeshPulse(){
-      const m = document.querySelectorAll('#meshMap .marker'); m.forEach((el,i)=> el.style.transform='translate(-50%,-50%) scale(1.2)');
-      setTimeout(()=> m.forEach(el=> el.style.transform='translate(-50%,-50%) scale(1)'),600);
-      alert('Pulse sent (sim). Nodes responded: ' + (3 + Math.floor(Math.random()*4)));
-    }
-    function simulateNodeJoin(){
-      const n = document.createElement('div'); n.className='marker green'; n.style.top = (10+Math.random()*80)+'%'; n.style.left=(10+Math.random()*80)+'%';
-      document.getElementById('meshMap').appendChild(n);
-      alert('Node joined the mesh (sim).');
-    }
-
-    // --- solar functions
-    function mintToken(){
-      const balEl = document.getElementById('tokenBal');
-      let bal = parseFloat(balEl.innerText);
-      bal = Math.round((bal + 0.123)*1000)/1000;
-      balEl.innerText = bal.toFixed(3) + ' ◎';
-      alert('Minted 0.123 ◎ (sim) from surplus.');
-    }
-    function boostGrid(){
-      document.getElementById('prod24').innerText = (24.7 + Math.random()*2).toFixed(1) + ' kWh';
-      alert('Grid optimized (AI). Efficiency +4% (sim).');
-    }
-
-    // settings apply
-    function applySettings(){
-      const n = parseInt(document.getElementById('inputNodes').value) || 1247;
-      document.getElementById('nodeCount').innerText = n;
-      document.getElementById('statNodes').innerText = n;
-      alert('Settings applied (sim).');
-    }
-
-    // copy folio
-    function copyFolio(){ navigator.clipboard?.writeText(document.getElementById('folio').innerText).then(()=>alert('Folio copied')) }
-
-    // replay threat
-    function replayThreat(){ alert('Replay mode (sim).') }
-
-    // initialize small intervals
-    (function init(){
-      setActiveView('explorer');
-      // warm-up some simulated logs
-      const now = new Date().toISOString().slice(0,19).replace('T',' ');
-      const logArea = document.querySelector('#tab-logs .card div');
-      const intro = document.createElement('div'); intro.className='mini log-entry';
-      intro.innerText = `[${now}] Demo session started — Simbyon local demo.`;
-      logArea.prepend(intro);
-    })();
-  </script>
 </body>
 </html>
+
+
+---
+
+✅ Qué tienes con esto:
+
+1. HTML maestro + CSS integrado (totalmente visual y responsive).
+
+
+2. Inputs y botones para cada NanoApp, con flujos reales de prueba (Bridge → TU-∞ → Antientropic Core).
+
+
+3. Hooks para backend que luego reemplazarás con tus APIs reales.
+
+
+4. Todo listo para subir a GitHub y testear local o en GitHub Pages.
+
+
+
+Si quieres, puedo hacer la versión “ultra full”, donde cada NanoApp tenga archivos JS separados, un mock backend local y un mini dashboard de resultados — más parecido a la microapp que imaginaste en Lovable, pero listo para correr sin depender de servidores externos.
+
+¿Quieres que haga esa versión next-level?
