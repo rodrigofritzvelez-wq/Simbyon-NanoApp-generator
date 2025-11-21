@@ -2,136 +2,98 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<title>Symbion - Antientropic Core Demo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simbyon Cognitive Networks — Full Index</title>
 <style>
-body { font-family: "Inter", sans-serif; margin:0; padding:0; color:#222; background:#fafafa; }
-header { background:#000; color:#fff; padding:60px 40px; text-align:center; }
-h1 { font-size:42px; margin-bottom:10px; }
-h2 { margin-top:50px; }
-section { padding:40px; max-width:1000px; margin:auto; }
-.card { background:white; border-radius:12px; padding:30px; margin:20px 0; box-shadow:0px 4px 16px rgba(0,0,0,0.08); }
-.nanoapp-title { font-size:24px; font-weight:600; margin-bottom:5px; }
-.grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:20px; }
-footer { text-align:center; padding:50px; color:#777; }
-button { padding:10px 20px; border:none; border-radius:6px; background:#000; color:#fff; cursor:pointer; margin-top:10px; }
-textarea { width:100%; height:120px; border-radius:6px; padding:10px; margin-top:10px; }
-.output { background:#f0f0f0; border-radius:6px; padding:10px; margin-top:10px; white-space:pre-wrap; }
+    body { font-family: "Inter", sans-serif; margin:0; padding:0; background:#fafafa; color:#222; }
+    header { background:#000; color:#fff; padding:50px; text-align:center; }
+    h1 { margin:0; font-size:36px; }
+    section { max-width:1000px; margin:auto; padding:30px; }
+    .card { background:white; border-radius:12px; padding:20px; margin:20px 0; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+    input, button { padding:10px; margin:5px 0; font-size:16px; width:100%; }
+    button { background:#222; color:#fff; border:none; border-radius:6px; cursor:pointer; }
+    button:hover { background:#444; }
+    .output { background:#eef; padding:15px; border-radius:8px; margin-top:10px; white-space:pre-wrap; }
 </style>
 </head>
 <body>
 
 <header>
-<h1>Simbyon Cognitive Networks</h1>
-<p>MicroApp que integra Coherencia, Optimización y Generación Dinámica de NanoApps</p>
+    <h1>Symbion Cognitive Networks</h1>
+    <p>Antientropic Core — Optimización de negocios con NanoApps</p>
 </header>
 
 <section>
-<h2>1. Visión General</h2>
-<div class="card">
-<p>Simbyon Cognitive Networks es un entorno que unifica captura de datos (Bridge), traducción universal (TU-∞), y optimización inteligente (Antientropic Core) para generar NanoApps personalizadas que mantienen los sistemas vivos y limpios.</p>
-</div>
+    <div class="card">
+        <h2>1. Ingresa tu información</h2>
+        <p>Cuéntanos cómo ves tu negocio y, opcionalmente, sube tu archivo con datos operativos.</p>
+        <textarea id="clientText" placeholder="Describe tu negocio..." rows="6"></textarea>
+        <input type="file" id="clientFile">
+        <button onclick="processInput()">Procesar Optimización</button>
+    </div>
+
+    <div class="card">
+        <h2>2. Feedback y Features de tu NanoApp</h2>
+        <div id="feedback" class="output">Aquí aparecerá tu feedback y las features sugeridas...</div>
+    </div>
+
+    <div class="card">
+        <h2>3. Proyección Económica</h2>
+        <div id="projection" class="output">Aquí aparecerá la estimación de impacto económico...</div>
+    </div>
+
+    <div class="card">
+        <h2>4. Descarga</h2>
+        <button onclick="downloadText()">Descargar Feedback y Features (.txt)</button>
+        <button onclick="downloadNanoApp()">Descargar NanoApp (.zip)</button>
+    </div>
 </section>
-
-<section>
-<h2>2. Arquitectura Viva — Los Tres Pilares</h2>
-<div class="grid">
-<div class="card">
-<div class="nanoapp-title">1. Bridge — Colector Universal</div>
-<p>Conecta cualquier fuente de datos hacia Simbyon y lo transforma en un stream unificado.</p>
-<textarea id="bridge-input" placeholder="Pega aquí el texto de tu cliente..."></textarea>
-<button onclick="processBridge()">Enviar a Bridge</button>
-<div class="output" id="bridge-output"></div>
-</div>
-
-<div class="card">
-<div class="nanoapp-title">2. TU-∞ — Traductor Universal de Data</div>
-<p>Convierte cualquier input a UDO (Universal Data Object).</p>
-<button onclick="translateUDO()">Traducir a UDO</button>
-<div class="output" id="udo-output"></div>
-</div>
-
-<div class="card">
-<div class="nanoapp-title">3. Antientropic Core — Optimización Continua</div>
-<p>Limpia, ordena y optimiza la información para generar NanoApps únicas.</p>
-<button onclick="runAntientropicCore()">Optimizar y generar NanoApp</button>
-<div class="output" id="core-output"></div>
-</div>
-</div>
-</section>
-
-<section>
-<h2>3. Modelo de Negocios</h2>
-<div class="card">
-<ul>
-<li>Bridge: Suscripción + consumo por volumen de ingesta.</li>
-<li>TU-∞: Pago por traducción y normalización.</li>
-<li>Antientropic Core: Suscripción enterprise + licenciamiento + uso vía API.</li>
-<li>Generación de NanoApps: Modelo modular "por NanoApp creada".</li>
-<li>Marketplace futuro: Venta de NanoApps generadas.</li>
-</ul>
-</div>
-</section>
-
-<section>
-<h2>4. Prueba de Flujo Cliente → NanoApp</h2>
-<div class="card">
-<p>Pega el plan de negocios del cliente en Bridge, traduce a UDO y ejecuta Antientropic Core:</p>
-</div>
-</section>
-
-<footer>
-Simbyon Cognitive Networks © 2025 — “Where Data Aprende a Evolucionar.”
-</footer>
 
 <script>
-// Bridge: captura input
-function processBridge() {
-    const input = document.getElementById('bridge-input').value;
-    const output = input.length > 0 ? "Bridge capturó correctamente el input del cliente." : "Nada recibido.";
-    document.getElementById('bridge-output').textContent = output;
+// Función simulada de procesamiento
+function processInput() {
+    const text = document.getElementById('clientText').value || "Sin descripción del negocio.";
+    const file = document.getElementById('clientFile').files[0];
+
+    // Feedback textual simulado
+    const feedback = `Tu negocio actual:\n- ${text}\n\nObservamos oportunidades de optimización: automatización de workflows, monitoreo de KPIs, reducción de errores.\nFeatures de tu NanoApp:\n- Gestión de clientes y tareas\n- Reportes automáticos\n- Integración con sistemas existentes\n- Optimización anti-entropía`;
+
+    document.getElementById('feedback').innerText = feedback;
+
+    // Proyección económica simulada
+    const currentRevenue = 20; // en millones
+    const optimizedRevenue = 25; // en millones
+    const symbionShare = (optimizedRevenue - currentRevenue) / 2;
+    const netClientRevenue = currentRevenue + symbionShare;
+
+    const projection = `Ganancia actual: $${currentRevenue}M\nGanancia tras optimización: $${optimizedRevenue}M\nParticipación de Symbion: $${symbionShare}M\nGanancia neta del cliente: $${netClientRevenue}M`;
+    document.getElementById('projection').innerText = projection;
 }
 
-// TU-∞: traductor UDO
-function translateUDO() {
-    const bridgeOutput = document.getElementById('bridge-input').value;
-    if (!bridgeOutput) { alert("Primero envía algo al Bridge."); return; }
-    // Aquí podrías apuntar a tu backend real para generar UDO
-    const udo = { tipo: "UDO", texto: bridgeOutput.slice(0,50) + "..." }; 
-    document.getElementById('udo-output').textContent = JSON.stringify(udo, null, 2);
+// Función para descargar feedback
+function downloadText() {
+    const text = document.getElementById('feedback').innerText + "\n\n" + document.getElementById('projection').innerText;
+    const blob = new Blob([text], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Symbion_Feedback.txt';
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
-// Antientropic Core: optimización
-function runAntientropicCore() {
-    const udoText = document.getElementById('udo-output').textContent;
-    if (!udoText) { alert("Primero genera el UDO."); return; }
-    // Hook a backend real luego
-    const optimized = "NanoApp generada a partir del UDO. Output listo para conexión a cliente.";
-    document.getElementById('core-output').textContent = optimized;
+// Función para descargar NanoApp (simulada)
+function downloadNanoApp() {
+    const content = "Contenido de tu NanoApp ligera y optimizada (simulado)";
+    const blob = new Blob([content], {type: 'application/zip'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'NanoApp.zip';
+    a.click();
+    URL.revokeObjectURL(url);
 }
 </script>
 
 </body>
 </html>
-
-
----
-
-✅ Qué tienes con esto:
-
-1. HTML maestro + CSS integrado (totalmente visual y responsive).
-
-
-2. Inputs y botones para cada NanoApp, con flujos reales de prueba (Bridge → TU-∞ → Antientropic Core).
-
-
-3. Hooks para backend que luego reemplazarás con tus APIs reales.
-
-
-4. Todo listo para subir a GitHub y testear local o en GitHub Pages.
-
-
-
-Si quieres, puedo hacer la versión “ultra full”, donde cada NanoApp tenga archivos JS separados, un mock backend local y un mini dashboard de resultados — más parecido a la microapp que imaginaste en Lovable, pero listo para correr sin depender de servidores externos.
-
-¿Quieres que haga esa versión next-level?
