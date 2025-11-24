@@ -1,99 +1,352 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Symbion - Antientropic Core Demo</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-    body { font-family: "Inter", sans-serif; margin:0; padding:0; background:#fafafa; color:#222; }
-    header { background:#000; color:#fff; padding:50px; text-align:center; }
-    h1 { margin:0; font-size:36px; }
-    section { max-width:1000px; margin:auto; padding:30px; }
-    .card { background:white; border-radius:12px; padding:20px; margin:20px 0; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
-    input, button { padding:10px; margin:5px 0; font-size:16px; width:100%; }
-    button { background:#222; color:#fff; border:none; border-radius:6px; cursor:pointer; }
-    button:hover { background:#444; }
-    .output { background:#eef; padding:15px; border-radius:8px; margin-top:10px; white-space:pre-wrap; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NanoApp Coherence Engine (Standalone) | Simbyon</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'simb-blue': '#1F62FF',
+                        'simb-orange': '#ff6b00',
+                        'simb-dark': '#0A0A0A',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        /* Estilo base para una mejor visualización del componente oscuro */
+        body {
+            background-color: #0d1117; 
+            padding: 40px;
+        }
+    </style>
 </head>
 <body>
+    
+    <div id="root">
+        </div>
+    
+    <script type="text/babel">
 
-<header>
-    <h1>Symbion Cognitive Networks</h1>
-    <p>Antientropic Core — Optimización de negocios con NanoApps</p>
-</header>
+        // --------------------------- Utilities ---------------------------
+        function getDefaultData(override) {
+            const base = {
+                totalAreas: 12,
+                areasScanned: 3,
+                incoherenceFound: 200000,
+                recoveredValue: 150000,
+                icsScore: 0.89,
+                untappedPotential: 1055000,
+                projectedROI: 21.9,
+                scannedAreas: [
+                    { id: 'inv', name: 'Inventory Management', found: 80000, recovered: 65000 },
+                    { id: 'pay', name: 'Payment Processing', found: 70000, recovered: 55000 },
+                    { id: 'sales', name: 'Sales Data', found: 50000, recovered: 30000 },
+                ],
+                opportunities: [
+                    { id: 'log', name: 'Logistics & Shipping', potential: 300000, points: ['Route optimization gaps', 'Carrier rate discrepancies', 'Delivery time mismatches'] },
+                    { id: 'fin', name: 'Financial Reconciliation', potential: 180000, points: ['Bank sync delays', 'Invoice mismatches', 'Payment timing gaps'] },
+                    { id: 'hr', name: 'HR & Payroll', potential: 120000, points: ['Time tracking errors', 'Benefits calculation gaps', 'Overtime miscalculations'] },
+                    { id: 'mf', name: 'Manufacturing', potential: 220000, points: ['Production schedule drift', 'Material waste tracking', 'Quality control gaps'] },
+                    { id: 'cs', name: 'Customer Service', potential: 95000, points: ['Ticket routing delays', 'Response time gaps', 'Follow-up misses'] },
+                    { id: 'ma', name: 'Marketing Analytics', potential: 140000, points: ['Attribution gaps', 'Campaign sync delays', 'ROI tracking errors'] },
+                ],
+            };
 
-<section>
-    <div class="card">
-        <h2>1. Ingresa tu información</h2>
-        <p>Cuéntanos cómo ves tu negocio y, opcionalmente, sube tu archivo con datos operativos.</p>
-        <textarea id="clientText" placeholder="Describe tu negocio..." rows="6"></textarea>
-        <input type="file" id="clientFile">
-        <button onclick="processInput()">Procesar Optimización</button>
-    </div>
+            if (!override) return base;
+            return { ...base, ...override };
+        }
 
-    <div class="card">
-        <h2>2. Feedback y Features de tu NanoApp</h2>
-        <div id="feedback" class="output">Aquí aparecerá tu feedback y las features sugeridas...</div>
-    </div>
+        function formatCurrency(n = 0) {
+            if (typeof n !== 'number') return n;
+            return '$' + n.toLocaleString();
+        }
 
-    <div class="card">
-        <h2>3. Proyección Económica</h2>
-        <div id="projection" class="output">Aquí aparecerá la estimación de impacto económico...</div>
-    </div>
+        function formatShort(n = 0) {
+            if (n >= 1e6) return `~$${Math.round(n / 1e6)}M`;
+            if (n >= 1e3) return `~$${Math.round(n / 1e3)}K`;
+            return `$${n}`;
+        }
 
-    <div class="card">
-        <h2>4. Descarga</h2>
-        <button onclick="downloadText()">Descargar Feedback y Features (.txt)</button>
-        <button onclick="downloadNanoApp()">Descargar NanoApp (.zip)</button>
-    </div>
-</section>
+        function percent(a, b) {
+            if (!b) return '0%';
+            return Math.round((a / b) * 100) + '%';
+        }
 
-<script>
-// Función simulada de procesamiento
-function processInput() {
-    const text = document.getElementById('clientText').value || "Sin descripción del negocio.";
-    const file = document.getElementById('clientFile').files[0];
+        function delay(ms) {
+            return new Promise((r) => setTimeout(r, ms));
+        }
 
-    // Feedback textual simulado
-    const feedback = `Tu negocio actual:\n- ${text}\n\nObservamos oportunidades de optimización: automatización de workflows, monitoreo de KPIs, reducción de errores.\nFeatures de tu NanoApp:\n- Gestión de clientes y tareas\n- Reportes automáticos\n- Integración con sistemas existentes\n- Optimización anti-entropía`;
+        function jitter(val, amount = 0.01, min = 0.0, max = 1.0) {
+            const delta = (Math.random() * amount * 2 - amount);
+            const next = Math.max(min, Math.min(max, val + delta));
+            return Number(next.toFixed(2));
+        }
 
-    document.getElementById('feedback').innerText = feedback;
 
-    // Proyección económica simulada
-    const currentRevenue = 20; // en millones
-    const optimizedRevenue = 25; // en millones
-    const symbionShare = (optimizedRevenue - currentRevenue) / 2;
-    const netClientRevenue = currentRevenue + symbionShare;
+        // --------------------------- Helper Components ---------------------------
+        function Card({ children }) {
+            return <div className="p-4 rounded-lg border border-[#1F62FF]/30 bg-[#081022]">{children}</div>;
+        }
 
-    const projection = `Ganancia actual: $${currentRevenue}M\nGanancia tras optimización: $${optimizedRevenue}M\nParticipación de Symbion: $${symbionShare}M\nGanancia neta del cliente: $${netClientRevenue}M`;
-    document.getElementById('projection').innerText = projection;
-}
+        function Progress({ value = 0 }) {
+            const v = Math.max(0, Math.min(100, Math.round(value)));
+            return (
+                <div className="w-full h-2 bg-[#1F2A44] rounded mt-3 overflow-hidden">
+                    <div className="h-full rounded" style={{ width: `${v}%`, background: 'linear-gradient(90deg, #1F62FF, #4CC6FF)' }} />
+                </div>
+            );
+        }
 
-// Función para descargar feedback
-function downloadText() {
-    const text = document.getElementById('feedback').innerText + "\n\n" + document.getElementById('projection').innerText;
-    const blob = new Blob([text], {type: 'text/plain'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'Symbion_Feedback.txt';
-    a.click();
-    URL.revokeObjectURL(url);
-}
+        // --------------------------- NanoApp Component ---------------------------
+        function NanoAppCoherenceEngine({
+            clientName = 'ACME CORPORATION',
+            initialData = null,
+            onRequestExpansion = null,
+            fetchLiveData = null,
+        }) {
+            // UI state
+            const [data, setData] = React.useState(() => getDefaultData(initialData));
+            const [scanning, setScanning] = React.useState(false);
+            const [expansionRequested, setExpansionRequested] = React.useState(false);
+            const [lastUpdated, setLastUpdated] = React.useState(Date.now());
 
-// Función para descargar NanoApp (simulada)
-function downloadNanoApp() {
-    const content = "Contenido de tu NanoApp ligera y optimizada (simulado)";
-    const blob = new Blob([content], {type: 'application/zip'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'NanoApp.zip';
-    a.click();
-    URL.revokeObjectURL(url);
-}
-</script>
+            // Live polling for ICS score demo
+            React.useEffect(() => {
+                let mounted = true;
+                const interval = setInterval(async () => {
+                    if (!mounted) return;
+                    if (typeof fetchLiveData === 'function') {
+                        try {
+                            const live = await fetchLiveData();
+                            setData((d) => ({ ...d, ...live }));
+                            setLastUpdated(Date.now());
+                        } catch (e) {
+                            // swallow — keep mock
+                        }
+                    } else {
+                        // local subtle variance to feel alive
+                        setData((d) => ({ ...d, icsScore: jitter(d.icsScore, 0.01, 0.85, 0.98) }));
+                    }
+                }, 5000);
 
+                return () => {
+                    mounted = false;
+                    clearInterval(interval);
+                };
+            }, [fetchLiveData]);
+
+            // Expand scan action
+            async function handleExpandScan() {
+                if (scanning || expansionRequested) return;
+                setScanning(true);
+
+                await delay(800);
+
+                if (typeof onRequestExpansion === 'function') {
+                    try {
+                        await onRequestExpansion({ client: clientName, requestedAt: new Date().toISOString() });
+                        setExpansionRequested(true);
+                    } catch (err) {
+                        console.error('onRequestExpansion failed', err);
+                        setExpansionRequested(true);
+                    }
+                } else {
+                    await delay(900);
+                    setData((d) => ({
+                        ...d,
+                        areasScanned: d.areasScanned + 9,
+                        recoveredValue: d.recoveredValue + d.untappedPotential * 0.6,
+                        untappedPotential: Math.max(0, d.untappedPotential * 0.4),
+                        icsScore: Math.min(0.99, d.icsScore + 0.04),
+                    }));
+
+                    setExpansionRequested(true);
+                }
+
+                setScanning(false);
+            }
+
+            // Small utility: open a details panel for an opportunity (placeholder)
+            function openOpportunityDetail(op) {
+                console.log('openOpportunityDetail', op);
+                setData((d) => ({ ...d, highlighted: op.name }));
+                setTimeout(() => setData((d) => ({ ...d, highlighted: null })), 1800);
+            }
+
+            return (
+                <div className="p-6 bg-[#0A0A0A] text-white min-h-[480px] rounded-2xl shadow-2xl max-w-6xl mx-auto">
+                    <header className="text-center mb-6">
+                        <div className="text-sm text-blue-300">{clientName}</div>
+                        <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-[#1F62FF] to-[#4CC6FF]">
+                            Coherence Engine
+                        </h1>
+                        <p className="text-blue-100 mt-1">Real-time Operational Coherence Monitoring</p>
+                    </header>
+
+                    {/* STATS */}
+                    <section className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <Card>
+                            <div className="uppercase text-xs text-blue-200 tracking-wider">Areas Scanned</div>
+                            <div className="text-2xl font-extrabold">{data.areasScanned}/{data.totalAreas}</div>
+                            <div className="text-sm text-green-300">{percent(data.areasScanned, data.totalAreas)} Coverage</div>
+                            <Progress value={(data.areasScanned / data.totalAreas) * 100} />
+                        </Card>
+
+                        <Card>
+                            <div className="uppercase text-xs text-blue-200 tracking-wider">Incoherence Found</div>
+                            <div className="text-2xl font-extrabold">{formatCurrency(data.incoherenceFound)}</div>
+                            <div className="text-sm text-blue-300">Total Detected</div>
+                        </Card>
+
+                        <Card>
+                            <div className="uppercase text-xs text-blue-200 tracking-wider">Value Recovered</div>
+                            <div className="text-2xl font-extrabold">{formatCurrency(data.recoveredValue)}</div>
+                            <div className="text-sm text-green-300">{Math.round((data.recoveredValue / Math.max(1, data.incoherenceFound)) * 100)}% Fixed</div>
+                            <Progress value={(data.recoveredValue / Math.max(1, data.incoherenceFound)) * 100} />
+                        </Card>
+
+                        <Card>
+                            <div className="uppercase text-xs text-blue-200 tracking-wider">Current ICS Score</div>
+                            <div className="text-2xl font-extrabold">{data.icsScore.toFixed(2)}</div>
+                            <div className="text-sm text-blue-300">Optimal Range</div>
+                        </Card>
+                    </section>
+
+                    {/* SCANNED AREAS */}
+                    <section className="mb-6">
+                        <h2 className="flex items-center gap-3 text-2xl font-bold text-[#4CC6FF] mb-4">
+                            <span className="inline-block w-2 h-10 rounded bg-gradient-to-b from-[#1F62FF] to-[#4CC6FF] mr-2"></span>
+                            Scanned & Cleaned Areas
+                        </h2>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {data.scannedAreas.map((a) => (
+                                <div key={a.id} className="bg-[#14141E] border border-[#10b981] rounded-lg p-4 relative">
+                                    <div className="absolute top-2 right-2 text-2xl font-extrabold text-[#10b981]">✓</div>
+                                    <div className="text-xl font-bold">{a.name}</div>
+                                    <div className="grid grid-cols-2 gap-3 mt-3">
+                                        <div className="p-3 rounded border-l-4 border-[#10b981] bg-[#0f1720]/40">
+                                            <div className="text-xs text-blue-200">Found</div>
+                                            <div className="text-lg font-bold text-[#10b981]">{formatCurrency(a.found)}</div>
+                                        </div>
+                                        <div className="p-3 rounded border-l-4 border-[#10b981] bg-[#0f1720]/40">
+                                            <div className="text-xs text-blue-200">Recovered</div>
+                                            <div className="text-lg font-bold text-[#10b981]">{formatCurrency(a.recovered)}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* UNSCANNED / OPPORTUNITIES */}
+                    <section className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-[#fff2e6]/10 via-transparent to-[#fff2e6]/6 border-2 border-[#ff6b00] animate-pulse">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="text-4xl">💡</div>
+                            <div>
+                                <div className="text-2xl font-extrabold text-[#ff6b00]">Unscanned Areas</div>
+                                <div className="text-sm text-amber-200">Potential value waiting to be recovered</div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {data.opportunities.map((op) => (
+                                <button
+                                    key={op.id}
+                                    onClick={() => openOpportunityDetail(op)}
+                                    className={`text-left p-4 rounded-lg border-2 transition-transform transform hover:scale-105 focus:scale-105 ${
+                                        data.highlighted === op.name ? 'ring-4 ring-orange-300' : 'border-[#ff6b00]'
+                                    } bg-[#14141E]`}
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <div className="text-lg font-bold">{op.name}</div>
+                                        <div className="text-2xl font-extrabold text-amber-300">{formatShort(op.potential)}</div>
+                                    </div>
+                                    <div className="text-xs text-blue-200 mt-2">Estimated Recovery Potential</div>
+                                    <div className="mt-3 border-t pt-3 text-sm text-blue-100">
+                                        {op.points.map((p, i) => (
+                                            <div key={i} className="flex items-center gap-2">
+                                                <span className="text-amber-300">→</span>
+                                                <span>{p}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* CTA */}
+                        <div className="mt-6 rounded-xl p-6 bg-gradient-to-r from-[#1F62FF] to-[#ff6b00] text-center">
+                            <div className="text-sm text-white/90">Total Untapped Potential</div>
+                            <div className="text-5xl font-extrabold text-white drop-shadow">{formatCurrency(data.untappedPotential)}</div>
+                            <div className="text-lg text-white/90 mt-2">Ready to be recovered from {data.opportunities.length} unscanned areas</div>
+
+                            <div className="mt-6 flex justify-center gap-4">
+                                <button
+                                    onClick={handleExpandScan}
+                                    disabled={scanning || expansionRequested}
+                                    className={`px-8 py-4 rounded-full font-extrabold tracking-wider uppercase ${
+                                        scanning || expansionRequested
+                                            ? 'bg-blue-200 text-[#0A0A0A] cursor-not-allowed'
+                                            : 'bg-white text-[#1F62FF] hover:bg-amber-400 hover:text-[#0A0A0A]'
+                                    } shadow-xl`}
+                                >
+                                    {scanning ? '⚡ Initiating Deep Scan...' : expansionRequested ? '✓ Expansion Requested' : '🚀 Expand Scan Now'}
+                                </button>
+                            </div>
+
+                            <div className="mt-4 bg-[#0b1220]/40 p-3 rounded">
+                                <div className="text-sm text-blue-100">Projected ROI if you expand:</div>
+                                <div className="text-3xl font-extrabold text-green-300">{data.projectedROI}X</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <footer className="text-xs text-blue-200 text-right">Last sync: {new Date(lastUpdated).toLocaleString()}</footer>
+                </div>
+            );
+        }
+
+        // --------------------------- Montaje de la Aplicación ---------------------------
+        
+        const clientData = {
+            clientName: "KAKNA MAYAN - E.ON INTEGRATION",
+            initialData: {
+                totalAreas: 15,
+                areasScanned: 5,
+                icsScore: 0.93,
+                untappedPotential: 1800000,
+                projectedROI: 28.5,
+            },
+            onRequestExpansion: (payload) => {
+                console.log("PLATFORM HOOK: Expansion requested by:", payload.client);
+                return new Promise(resolve => setTimeout(resolve, 500)); 
+            }
+        };
+
+        // Renderiza el componente NanoAppCoherenceEngine dentro del contenedor 'root'
+        ReactDOM.createRoot(document.getElementById('root')).render(
+            <React.StrictMode>
+                <NanoAppCoherenceEngine 
+                    clientName={clientData.clientName}
+                    initialData={clientData.initialData}
+                    onRequestExpansion={clientData.onRequestExpansion}
+                />
+            </React.StrictMode>
+        );
+    </script>
 </body>
 </html>
