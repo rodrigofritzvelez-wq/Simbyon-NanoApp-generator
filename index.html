@@ -1,352 +1,274 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NanoApp Coherence Engine (Standalone) | Simbyon</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'simb-blue': '#1F62FF',
-                        'simb-orange': '#ff6b00',
-                        'simb-dark': '#0A0A0A',
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <style>
-        /* Estilo base para una mejor visualización del componente oscuro */
-        body {
-            background-color: #0d1117; 
-            padding: 40px;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Armstrong — Monitor (index.html)</title>
+  <style>
+    :root{--bg:#071025;--card:#0d1624;--accent:#7c3aed;--muted:#98a8bf;--glass:rgba(255,255,255,0.03)}
+    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#021026 0%, #051022 100%);color:#e8f1fb}
+    .wrap{max-width:1200px;margin:22px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:800;color:#041224}
+    h1{margin:0;font-size:18px}
+    .muted{color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:320px 1fr;gap:16px;margin-top:18px}
+    .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .small-stats{display:flex;gap:8px;flex-wrap:wrap}
+    .stat{background:var(--glass);padding:8px;border-radius:10px;font-size:13px;color:var(--muted)}
+    .nodes-list{margin-top:10px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.02)}
+    th{font-size:12px;color:var(--muted)}
+    .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px}
+    .dot.green{background:#4ade80}
+    .dot.yellow{background:#facc15}
+    .dot.red{background:#fb7185}
+    .events{height:320px;overflow:auto;padding:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:10px}
+    .event{padding:8px;border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,0.02)}
+    .controls{display:flex;gap:8px;margin-top:10px}
+    button.primary{background:linear-gradient(90deg,var(--accent),#06b6d4);border:none;padding:10px 12px;border-radius:10px;color:#041224;font-weight:700;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
+    .panel{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .kpi{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .timeline{height:120px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:8px;padding:8px;overflow:auto}
+    .footer{margin-top:16px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}.panel{grid-template-columns:1fr}}
+  </style>
 </head>
 <body>
-    
-    <div id="root">
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">S</div>
+        <div>
+          <h1>Armstrong — Monitor</h1>
+          <div class="muted">Cockpit mínimo para observación de la Simbyon Core (alpha)</div>
         </div>
-    
-    <script type="text/babel">
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="muted">Env: <code id="envBadge">local</code></div>
+        <button class="ghost" id="exportCsv">Export CSV</button>
+        <button class="primary" id="startTest">Start Silent Alpha</button>
+      </div>
+    </header>
 
-        // --------------------------- Utilities ---------------------------
-        function getDefaultData(override) {
-            const base = {
-                totalAreas: 12,
-                areasScanned: 3,
-                incoherenceFound: 200000,
-                recoveredValue: 150000,
-                icsScore: 0.89,
-                untappedPotential: 1055000,
-                projectedROI: 21.9,
-                scannedAreas: [
-                    { id: 'inv', name: 'Inventory Management', found: 80000, recovered: 65000 },
-                    { id: 'pay', name: 'Payment Processing', found: 70000, recovered: 55000 },
-                    { id: 'sales', name: 'Sales Data', found: 50000, recovered: 30000 },
-                ],
-                opportunities: [
-                    { id: 'log', name: 'Logistics & Shipping', potential: 300000, points: ['Route optimization gaps', 'Carrier rate discrepancies', 'Delivery time mismatches'] },
-                    { id: 'fin', name: 'Financial Reconciliation', potential: 180000, points: ['Bank sync delays', 'Invoice mismatches', 'Payment timing gaps'] },
-                    { id: 'hr', name: 'HR & Payroll', potential: 120000, points: ['Time tracking errors', 'Benefits calculation gaps', 'Overtime miscalculations'] },
-                    { id: 'mf', name: 'Manufacturing', potential: 220000, points: ['Production schedule drift', 'Material waste tracking', 'Quality control gaps'] },
-                    { id: 'cs', name: 'Customer Service', potential: 95000, points: ['Ticket routing delays', 'Response time gaps', 'Follow-up misses'] },
-                    { id: 'ma', name: 'Marketing Analytics', potential: 140000, points: ['Attribution gaps', 'Campaign sync delays', 'ROI tracking errors'] },
-                ],
-            };
+    <div class="grid">
+      <!-- left column: controls + nodes -->
+      <aside class="card">
+        <strong>Control & Config</strong>
+        <div class="muted" style="margin-top:6px">Puntos rápidos (placeholder para .env y endpoints)</div>
+        <div style="margin-top:8px;font-size:13px">
+          <label class="muted">API Base</label>
+          <input id="apiBase" style="width:100%;padding:8px;margin-top:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:inherit" value="https://api.symbyon.local" />
+          <label class="muted">NODE_TEMPLATE</label>
+          <input id="nodeTemplate" style="width:100%;padding:8px;margin-top:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:inherit" value="/node/birth" />
+        </div>
 
-            if (!override) return base;
-            return { ...base, ...override };
-        }
+        <div style="margin-top:12px">
+          <strong>Nodes (10 target)</strong>
+          <div class="nodes-list" id="nodesList">
+            <!-- table injected by JS -->
+          </div>
+        </div>
 
-        function formatCurrency(n = 0) {
-            if (typeof n !== 'number') return n;
-            return '$' + n.toLocaleString();
-        }
+        <div style="margin-top:12px">
+          <strong>Quick actions</strong>
+          <div class="controls">
+            <button class="ghost" id="seedNodes">Seed 10 nodes</button>
+            <button class="ghost" id="kickPulse">Send Pulse</button>
+            <button class="ghost" id="mutate">Force Mutation</button>
+          </div>
+        </div>
+      </aside>
 
-        function formatShort(n = 0) {
-            if (n >= 1e6) return `~$${Math.round(n / 1e6)}M`;
-            if (n >= 1e3) return `~$${Math.round(n / 1e3)}K`;
-            return `$${n}`;
-        }
+      <!-- right column: dashboard -->
+      <section>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>Telemetría simbiótica</strong><div class="muted">Métricas mínimas para narrar evidencia.</div></div>
+            <div class="small-stats">
+              <div class="stat">Nodes: <strong id="kNodes">0</strong></div>
+              <div class="stat">Pulses: <strong id="kPulses">0</strong></div>
+              <div class="stat">Mutations: <strong id="kMut">0</strong></div>
+            </div>
+          </div>
 
-        function percent(a, b) {
-            if (!b) return '0%';
-            return Math.round((a / b) * 100) + '%';
-        }
+          <div style="margin-top:12px" class="panel">
+            <div class="kpi">
+              <div class="muted">Interacciones</div>
+              <div style="font-size:20px;font-weight:700" id="kInteractions">0</div>
+              <div class="muted" style="margin-top:6px">Avg RT: <span id="kRT">—</span></div>
+            </div>
+            <div class="kpi">
+              <div class="muted">Resonancia</div>
+              <div style="font-size:20px;font-weight:700" id="kResonance">0%</div>
+              <div class="muted" style="margin-top:6px">Cualitativa: <span id="kQual">—</span></div>
+            </div>
+            <div class="kpi">
+              <div class="muted">Retención simbiótica</div>
+              <div style="font-size:20px;font-weight:700" id="kRetention">0%</div>
+              <div class="muted" style="margin-top:6px">Activos: <span id="kActive">0</span></div>
+            </div>
+          </div>
 
-        function delay(ms) {
-            return new Promise((r) => setTimeout(r, ms));
-        }
+          <div style="margin-top:12px">
+            <div class="muted">Events stream</div>
+            <div class="events" id="events"></div>
+          </div>
 
-        function jitter(val, amount = 0.01, min = 0.0, max = 1.0) {
-            const delta = (Math.random() * amount * 2 - amount);
-            const next = Math.max(min, Math.min(max, val + delta));
-            return Number(next.toFixed(2));
-        }
+        </div>
 
+        <div class="card" style="margin-top:12px">
+          <strong>Timeline & notes</strong>
+          <div class="muted" style="margin-top:6px">Registro breve de hitos durante la prueba.</div>
+          <div class="timeline" id="timeline"></div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <input id="noteInput" placeholder="nota breve..." style="flex:1;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03)" />
+            <button class="primary" id="addNote">Add</button>
+          </div>
+        </div>
 
-        // --------------------------- Helper Components ---------------------------
-        function Card({ children }) {
-            return <div className="p-4 rounded-lg border border-[#1F62FF]/30 bg-[#081022]">{children}</div>;
-        }
+        <div class="card" style="margin-top:12px">
+          <strong>Qualitative signals</strong>
+          <div class="muted" style="margin-top:6px">Inputs que deberías coleccionar manualmente (estas son guías).</div>
+          <ul style="margin-top:8px" class="muted">
+            <li>Fascinación (texto del usuario en sus propias palabras)</li>
+            <li>Fricción (lo que lo bloqueó)</li>
+            <li>Metáforas espontáneas</li>
+            <li>Acciones sugeridas por la red</li>
+          </ul>
+        </div>
 
-        function Progress({ value = 0 }) {
-            const v = Math.max(0, Math.min(100, Math.round(value)));
-            return (
-                <div className="w-full h-2 bg-[#1F2A44] rounded mt-3 overflow-hidden">
-                    <div className="h-full rounded" style={{ width: `${v}%`, background: 'linear-gradient(90deg, #1F62FF, #4CC6FF)' }} />
-                </div>
-            );
-        }
+        <div class="footer">
+          <div>Armstrong Monitor — alpha • local</div>
+          <div class="muted">Tip: guarda este archivo en tu repo y ábrelo en un navegador. No necesita servidor.</div>
+        </div>
+      </section>
+    </div>
+  </div>
 
-        // --------------------------- NanoApp Component ---------------------------
-        function NanoAppCoherenceEngine({
-            clientName = 'ACME CORPORATION',
-            initialData = null,
-            onRequestExpansion = null,
-            fetchLiveData = null,
-        }) {
-            // UI state
-            const [data, setData] = React.useState(() => getDefaultData(initialData));
-            const [scanning, setScanning] = React.useState(false);
-            const [expansionRequested, setExpansionRequested] = React.useState(false);
-            const [lastUpdated, setLastUpdated] = React.useState(Date.now());
+  <script>
+    // Simulated monitor JS (MVP)
+    const nodes = [];
+    const eventsEl = document.getElementById('events');
+    const nodesList = document.getElementById('nodesList');
+    const kNodes = document.getElementById('kNodes');
+    const kPulses = document.getElementById('kPulses');
+    const kMut = document.getElementById('kMut');
+    const kInteractions = document.getElementById('kInteractions');
+    const kResonance = document.getElementById('kResonance');
+    const kRetention = document.getElementById('kRetention');
+    const kActive = document.getElementById('kActive');
+    const apiBase = document.getElementById('apiBase');
+    const seedBtn = document.getElementById('seedNodes');
+    const kickPulse = document.getElementById('kickPulse');
+    const mutateBtn = document.getElementById('mutate');
+    const startTest = document.getElementById('startTest');
+    const timeline = document.getElementById('timeline');
+    const noteInput = document.getElementById('noteInput');
+    const addNote = document.getElementById('addNote');
+    const exportCsv = document.getElementById('exportCsv');
 
-            // Live polling for ICS score demo
-            React.useEffect(() => {
-                let mounted = true;
-                const interval = setInterval(async () => {
-                    if (!mounted) return;
-                    if (typeof fetchLiveData === 'function') {
-                        try {
-                            const live = await fetchLiveData();
-                            setData((d) => ({ ...d, ...live }));
-                            setLastUpdated(Date.now());
-                        } catch (e) {
-                            // swallow — keep mock
-                        }
-                    } else {
-                        // local subtle variance to feel alive
-                        setData((d) => ({ ...d, icsScore: jitter(d.icsScore, 0.01, 0.85, 0.98) }));
-                    }
-                }, 5000);
+    function randChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+    function now(){ return new Date().toLocaleTimeString(); }
 
-                return () => {
-                    mounted = false;
-                    clearInterval(interval);
-                };
-            }, [fetchLiveData]);
+    function renderNodes(){
+      kNodes.textContent = nodes.length;
+      const table = document.createElement('table');
+      table.innerHTML = `<thead><tr><th>Node</th><th>Archetype</th><th>Status</th></tr></thead>`;
+      const body = document.createElement('tbody');
+      nodes.forEach(n=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${n.handle}</td><td>${n.archetype}</td><td>${statusDot(n.status)} ${n.status}</td>`;
+        body.appendChild(tr);
+      });
+      table.appendChild(body);
+      nodesList.innerHTML=''; nodesList.appendChild(table);
+      kActive.textContent = nodes.filter(n=>n.status==='active').length;
+    }
 
-            // Expand scan action
-            async function handleExpandScan() {
-                if (scanning || expansionRequested) return;
-                setScanning(true);
+    function statusDot(status){
+      if(status==='active') return `<span class="dot green"></span>`;
+      if(status==='idle') return `<span class="dot yellow"></span>`;
+      return `<span class="dot red"></span>`;
+    }
 
-                await delay(800);
+    function pushEvent(text){
+      const el = document.createElement('div'); el.className='event';
+      el.innerHTML = `<div style="font-size:12px;color:var(--muted)">${now()}</div><div style="margin-top:6px">${text}</div>`;
+      eventsEl.prepend(el);
+      // cap events
+      if(eventsEl.children.length>150) eventsEl.removeChild(eventsEl.lastChild);
+    }
 
-                if (typeof onRequestExpansion === 'function') {
-                    try {
-                        await onRequestExpansion({ client: clientName, requestedAt: new Date().toISOString() });
-                        setExpansionRequested(true);
-                    } catch (err) {
-                        console.error('onRequestExpansion failed', err);
-                        setExpansionRequested(true);
-                    }
-                } else {
-                    await delay(900);
-                    setData((d) => ({
-                        ...d,
-                        areasScanned: d.areasScanned + 9,
-                        recoveredValue: d.recoveredValue + d.untappedPotential * 0.6,
-                        untappedPotential: Math.max(0, d.untappedPotential * 0.4),
-                        icsScore: Math.min(0.99, d.icsScore + 0.04),
-                    }));
+    function seedNodesFn(){
+      nodes.length = 0;
+      const archetypes = ['Cuidador Solar','Artífice','Guardián','Tejedor','Explorador','Sacerdote','Curador','Navegante'];
+      for(let i=1;i<=10;i++){
+        nodes.push({handle:`simbionte-${i}`,archetype:randChoice(archetypes),status: 'idle',interactions:0});
+      }
+      renderNodes();
+      pushEvent('Seeded 10 nodes (local).');
+    }
 
-                    setExpansionRequested(true);
-                }
+    function sendPulse(){
+      if(nodes.length===0){ pushEvent('No nodes: seed first.'); return; }
+      const sender = randChoice(nodes);
+      sender.status='active'; sender.interactions += 1;
+      kInteractions.textContent = parseInt(kInteractions.textContent||'0') + 1;
+      kPulses.textContent = parseInt(kPulses.textContent||'0') + 1;
+      const txt = `${sender.handle} pulse → intención breve enviada a la red.`;
+      pushEvent(txt);
+      // update resonance heuristic
+      const r = Math.min(100, Math.round((parseInt(kPulses.textContent)||0) / 2));
+      kResonance.textContent = r + '%';
+      kRetention.textContent = Math.min(100, Math.round((parseInt(kInteractions.textContent)||0) / 3)) + '%';
+      renderNodes();
+    }
 
-                setScanning(false);
-            }
+    function forceMutation(){
+      kMut.textContent = parseInt(kMut.textContent||'0') + 1;
+      pushEvent('Mutation triggered by curator. Ontology version ++');
+    }
 
-            // Small utility: open a details panel for an opportunity (placeholder)
-            function openOpportunityDetail(op) {
-                console.log('openOpportunityDetail', op);
-                setData((d) => ({ ...d, highlighted: op.name }));
-                setTimeout(() => setData((d) => ({ ...d, highlighted: null })), 1800);
-            }
+    seedBtn.addEventListener('click', seedNodesFn);
+    kickPulse.addEventListener('click', sendPulse);
+    mutateBtn.addEventListener('click', forceMutation);
 
-            return (
-                <div className="p-6 bg-[#0A0A0A] text-white min-h-[480px] rounded-2xl shadow-2xl max-w-6xl mx-auto">
-                    <header className="text-center mb-6">
-                        <div className="text-sm text-blue-300">{clientName}</div>
-                        <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-[#1F62FF] to-[#4CC6FF]">
-                            Coherence Engine
-                        </h1>
-                        <p className="text-blue-100 mt-1">Real-time Operational Coherence Monitoring</p>
-                    </header>
+    startTest.addEventListener('click', ()=>{
+      seedNodesFn();
+      pushEvent('Silent Alpha started — observe 10 nodes.');
+    });
 
-                    {/* STATS */}
-                    <section className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                        <Card>
-                            <div className="uppercase text-xs text-blue-200 tracking-wider">Areas Scanned</div>
-                            <div className="text-2xl font-extrabold">{data.areasScanned}/{data.totalAreas}</div>
-                            <div className="text-sm text-green-300">{percent(data.areasScanned, data.totalAreas)} Coverage</div>
-                            <Progress value={(data.areasScanned / data.totalAreas) * 100} />
-                        </Card>
+    addNote.addEventListener('click', ()=>{
+      const t = noteInput.value.trim(); if(!t) return; const p = document.createElement('div'); p.style.padding='6px'; p.style.borderBottom='1px solid rgba(255,255,255,0.02)'; p.innerHTML = `<div style="font-size:12px;color:var(--muted)">${now()}</div><div style="margin-top:6px">${t}</div>`; timeline.prepend(p); noteInput.value='';
+    });
 
-                        <Card>
-                            <div className="uppercase text-xs text-blue-200 tracking-wider">Incoherence Found</div>
-                            <div className="text-2xl font-extrabold">{formatCurrency(data.incoherenceFound)}</div>
-                            <div className="text-sm text-blue-300">Total Detected</div>
-                        </Card>
+    exportCsv.addEventListener('click', ()=>{
+      // export simple nodes telemetry
+      if(nodes.length===0){ alert('No nodes to export.'); return; }
+      const rows = [['handle','archetype','status','interactions']];
+      nodes.forEach(n=>rows.push([n.handle,n.archetype,n.status,n.interactions]));
+      const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='nodes_telemetry.csv'; a.click(); URL.revokeObjectURL(url);
+    });
 
-                        <Card>
-                            <div className="uppercase text-xs text-blue-200 tracking-wider">Value Recovered</div>
-                            <div className="text-2xl font-extrabold">{formatCurrency(data.recoveredValue)}</div>
-                            <div className="text-sm text-green-300">{Math.round((data.recoveredValue / Math.max(1, data.incoherenceFound)) * 100)}% Fixed</div>
-                            <Progress value={(data.recoveredValue / Math.max(1, data.incoherenceFound)) * 100} />
-                        </Card>
+    // small UX: seed on load for convenience
+    // seedNodesFn();
 
-                        <Card>
-                            <div className="uppercase text-xs text-blue-200 tracking-wider">Current ICS Score</div>
-                            <div className="text-2xl font-extrabold">{data.icsScore.toFixed(2)}</div>
-                            <div className="text-sm text-blue-300">Optimal Range</div>
-                        </Card>
-                    </section>
-
-                    {/* SCANNED AREAS */}
-                    <section className="mb-6">
-                        <h2 className="flex items-center gap-3 text-2xl font-bold text-[#4CC6FF] mb-4">
-                            <span className="inline-block w-2 h-10 rounded bg-gradient-to-b from-[#1F62FF] to-[#4CC6FF] mr-2"></span>
-                            Scanned & Cleaned Areas
-                        </h2>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {data.scannedAreas.map((a) => (
-                                <div key={a.id} className="bg-[#14141E] border border-[#10b981] rounded-lg p-4 relative">
-                                    <div className="absolute top-2 right-2 text-2xl font-extrabold text-[#10b981]">✓</div>
-                                    <div className="text-xl font-bold">{a.name}</div>
-                                    <div className="grid grid-cols-2 gap-3 mt-3">
-                                        <div className="p-3 rounded border-l-4 border-[#10b981] bg-[#0f1720]/40">
-                                            <div className="text-xs text-blue-200">Found</div>
-                                            <div className="text-lg font-bold text-[#10b981]">{formatCurrency(a.found)}</div>
-                                        </div>
-                                        <div className="p-3 rounded border-l-4 border-[#10b981] bg-[#0f1720]/40">
-                                            <div className="text-xs text-blue-200">Recovered</div>
-                                            <div className="text-lg font-bold text-[#10b981]">{formatCurrency(a.recovered)}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-
-                    {/* UNSCANNED / OPPORTUNITIES */}
-                    <section className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-[#fff2e6]/10 via-transparent to-[#fff2e6]/6 border-2 border-[#ff6b00] animate-pulse">
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="text-4xl">💡</div>
-                            <div>
-                                <div className="text-2xl font-extrabold text-[#ff6b00]">Unscanned Areas</div>
-                                <div className="text-sm text-amber-200">Potential value waiting to be recovered</div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {data.opportunities.map((op) => (
-                                <button
-                                    key={op.id}
-                                    onClick={() => openOpportunityDetail(op)}
-                                    className={`text-left p-4 rounded-lg border-2 transition-transform transform hover:scale-105 focus:scale-105 ${
-                                        data.highlighted === op.name ? 'ring-4 ring-orange-300' : 'border-[#ff6b00]'
-                                    } bg-[#14141E]`}
-                                >
-                                    <div className="flex justify-between items-center">
-                                        <div className="text-lg font-bold">{op.name}</div>
-                                        <div className="text-2xl font-extrabold text-amber-300">{formatShort(op.potential)}</div>
-                                    </div>
-                                    <div className="text-xs text-blue-200 mt-2">Estimated Recovery Potential</div>
-                                    <div className="mt-3 border-t pt-3 text-sm text-blue-100">
-                                        {op.points.map((p, i) => (
-                                            <div key={i} className="flex items-center gap-2">
-                                                <span className="text-amber-300">→</span>
-                                                <span>{p}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* CTA */}
-                        <div className="mt-6 rounded-xl p-6 bg-gradient-to-r from-[#1F62FF] to-[#ff6b00] text-center">
-                            <div className="text-sm text-white/90">Total Untapped Potential</div>
-                            <div className="text-5xl font-extrabold text-white drop-shadow">{formatCurrency(data.untappedPotential)}</div>
-                            <div className="text-lg text-white/90 mt-2">Ready to be recovered from {data.opportunities.length} unscanned areas</div>
-
-                            <div className="mt-6 flex justify-center gap-4">
-                                <button
-                                    onClick={handleExpandScan}
-                                    disabled={scanning || expansionRequested}
-                                    className={`px-8 py-4 rounded-full font-extrabold tracking-wider uppercase ${
-                                        scanning || expansionRequested
-                                            ? 'bg-blue-200 text-[#0A0A0A] cursor-not-allowed'
-                                            : 'bg-white text-[#1F62FF] hover:bg-amber-400 hover:text-[#0A0A0A]'
-                                    } shadow-xl`}
-                                >
-                                    {scanning ? '⚡ Initiating Deep Scan...' : expansionRequested ? '✓ Expansion Requested' : '🚀 Expand Scan Now'}
-                                </button>
-                            </div>
-
-                            <div className="mt-4 bg-[#0b1220]/40 p-3 rounded">
-                                <div className="text-sm text-blue-100">Projected ROI if you expand:</div>
-                                <div className="text-3xl font-extrabold text-green-300">{data.projectedROI}X</div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <footer className="text-xs text-blue-200 text-right">Last sync: {new Date(lastUpdated).toLocaleString()}</footer>
-                </div>
-            );
-        }
-
-        // --------------------------- Montaje de la Aplicación ---------------------------
-        
-        const clientData = {
-            clientName: "KAKNA MAYAN - E.ON INTEGRATION",
-            initialData: {
-                totalAreas: 15,
-                areasScanned: 5,
-                icsScore: 0.93,
-                untappedPotential: 1800000,
-                projectedROI: 28.5,
-            },
-            onRequestExpansion: (payload) => {
-                console.log("PLATFORM HOOK: Expansion requested by:", payload.client);
-                return new Promise(resolve => setTimeout(resolve, 500)); 
-            }
-        };
-
-        // Renderiza el componente NanoAppCoherenceEngine dentro del contenedor 'root'
-        ReactDOM.createRoot(document.getElementById('root')).render(
-            <React.StrictMode>
-                <NanoAppCoherenceEngine 
-                    clientName={clientData.clientName}
-                    initialData={clientData.initialData}
-                    onRequestExpansion={clientData.onRequestExpansion}
-                />
-            </React.StrictMode>
-        );
-    </script>
+    // NOTES for devs (place near top of file in repo):
+    /*
+      - This index.html is an offline MVP monitor. Replace JS simulated parts with fetch() calls to real endpoints:
+        * GET /nodes -> list of nodes
+        * POST /event -> push new pulse/mutation
+        * GET /telemetry -> metrics
+      - .env placeholders to be added on server side: MODEL_KEY, NETWORK_URL, ONTOLOGY_SOURCE
+      - For production, move telemetry to a time-series DB (influx / prometheus) and secure endpoints with JWTs
+    */
+  </script>
 </body>
 </html>
