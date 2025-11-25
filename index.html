@@ -1,274 +1,461 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Armstrong — Monitor (index.html)</title>
-  <style>
-    :root{--bg:#071025;--card:#0d1624;--accent:#7c3aed;--muted:#98a8bf;--glass:rgba(255,255,255,0.03)}
-    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#021026 0%, #051022 100%);color:#e8f1fb}
-    .wrap{max-width:1200px;margin:22px auto;padding:20px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:800;color:#041224}
-    h1{margin:0;font-size:18px}
-    .muted{color:var(--muted);font-size:13px}
-    .grid{display:grid;grid-template-columns:320px 1fr;gap:16px;margin-top:18px}
-    .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-    .small-stats{display:flex;gap:8px;flex-wrap:wrap}
-    .stat{background:var(--glass);padding:8px;border-radius:10px;font-size:13px;color:var(--muted)}
-    .nodes-list{margin-top:10px}
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    th,td{padding:8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.02)}
-    th{font-size:12px;color:var(--muted)}
-    .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px}
-    .dot.green{background:#4ade80}
-    .dot.yellow{background:#facc15}
-    .dot.red{background:#fb7185}
-    .events{height:320px;overflow:auto;padding:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:10px}
-    .event{padding:8px;border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,0.02)}
-    .controls{display:flex;gap:8px;margin-top:10px}
-    button.primary{background:linear-gradient(90deg,var(--accent),#06b6d4);border:none;padding:10px 12px;border-radius:10px;color:#041224;font-weight:700;cursor:pointer}
-    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
-    .panel{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .kpi{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
-    .timeline{height:120px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:8px;padding:8px;overflow:auto}
-    .footer{margin-top:16px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
-    @media(max-width:980px){.grid{grid-template-columns:1fr}.panel{grid-template-columns:1fr}}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="logo">S</div>
-        <div>
-          <h1>Armstrong — Monitor</h1>
-          <div class="muted">Cockpit mínimo para observación de la Simbyon Core (alpha)</div>
+import React, { useState, useEffect } from 'react';
+import { Activity, Zap, Network, TrendingUp, Circle } from 'lucide-react';
+
+const ArmstrongMonitor = () => {
+  const [nodes, setNodes] = useState([]);
+  const [metrics, setMetrics] = useState({
+    interactions: 0,
+    pulses: 0,
+    mutations: 0,
+    resonance: 0,
+    retention: 0
+  });
+  const [events, setEvents] = useState([]);
+  const [timeline, setTimeline] = useState([]);
+  const [noteInput, setNoteInput] = useState('');
+  const [pulseHistory, setPulseHistory] = useState([]);
+  const [resonanceHistory, setResonanceHistory] = useState([]);
+
+  const archetypes = ['Cuidador Solar', 'Artífice', 'Guardián', 'Tejedor', 'Explorador', 'Sacerdote', 'Curador', 'Navegante'];
+  const colors = ['#4ade80', '#06b6d4', '#7c3aed', '#f59e0b', '#ec4899', '#10b981', '#3b82f6', '#8b5cf6'];
+
+  const seedNodes = () => {
+    const newNodes = Array.from({ length: 10 }, (_, i) => ({
+      id: i + 1,
+      handle: `simbionte-${i + 1}`,
+      archetype: archetypes[Math.floor(Math.random() * archetypes.length)],
+      status: 'idle',
+      interactions: 0,
+      color: colors[i % colors.length]
+    }));
+    setNodes(newNodes);
+    addEvent('Seeded 10 nodes - Sistema inicializado');
+  };
+
+  const addEvent = (text) => {
+    const newEvent = {
+      id: Date.now(),
+      text,
+      time: new Date().toLocaleTimeString()
+    };
+    setEvents(prev => [newEvent, ...prev].slice(0, 50));
+  };
+
+  const sendPulse = () => {
+    if (nodes.length === 0) {
+      addEvent('⚠️ No hay nodes: ejecuta seed primero');
+      return;
+    }
+    
+    const randomNode = nodes[Math.floor(Math.random() * nodes.length)];
+    setNodes(prev => prev.map(n => 
+      n.id === randomNode.id 
+        ? { ...n, status: 'active', interactions: n.interactions + 1 }
+        : n
+    ));
+
+    setMetrics(prev => {
+      const newPulses = prev.pulses + 1;
+      const newInteractions = prev.interactions + 1;
+      const newResonance = Math.min(100, Math.round(newPulses / 2));
+      const newRetention = Math.min(100, Math.round(newInteractions / 3));
+      
+      // Update histories
+      setPulseHistory(h => [...h, newPulses].slice(-20));
+      setResonanceHistory(h => [...h, newResonance].slice(-20));
+      
+      return {
+        ...prev,
+        pulses: newPulses,
+        interactions: newInteractions,
+        resonance: newResonance,
+        retention: newRetention
+      };
+    });
+
+    addEvent(`✨ ${randomNode.handle} envió pulso → red activada`);
+  };
+
+  const forceMutation = () => {
+    setMetrics(prev => ({ ...prev, mutations: prev.mutations + 1 }));
+    addEvent('🧬 Mutación forzada - Ontología actualizada');
+  };
+
+  const startTest = () => {
+    seedNodes();
+    addEvent('🚀 Silent Alpha iniciado - Observando 10 nodes');
+  };
+
+  const addNote = () => {
+    if (!noteInput.trim()) return;
+    setTimeline(prev => [{
+      id: Date.now(),
+      text: noteInput,
+      time: new Date().toLocaleTimeString()
+    }, ...prev]);
+    setNoteInput('');
+  };
+
+  const activeNodes = nodes.filter(n => n.status === 'active').length;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100 p-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <header className="mb-6">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-cyan-500 flex items-center justify-center font-bold text-slate-950">
+                S
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">Armstrong Monitor</h1>
+                <p className="text-slate-400 text-sm">Observación Simbyon Core (alpha)</p>
+              </div>
+            </div>
+            <button 
+              onClick={startTest}
+              className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-cyan-500 rounded-lg font-bold text-slate-950 hover:opacity-90 transition"
+            >
+              Start Silent Alpha
+            </button>
+          </div>
+        </header>
+
+        {/* Visual Metrics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <MetricCard 
+            icon={<Network className="w-5 h-5" />}
+            label="Nodes Activos"
+            value={`${activeNodes}/${nodes.length}`}
+            color="from-green-500/20 to-green-600/20"
+            borderColor="border-green-500/30"
+          />
+          <MetricCard 
+            icon={<Zap className="w-5 h-5" />}
+            label="Pulsos"
+            value={metrics.pulses}
+            color="from-purple-500/20 to-purple-600/20"
+            borderColor="border-purple-500/30"
+          />
+          <MetricCard 
+            icon={<Activity className="w-5 h-5" />}
+            label="Resonancia"
+            value={`${metrics.resonance}%`}
+            color="from-cyan-500/20 to-cyan-600/20"
+            borderColor="border-cyan-500/30"
+            progress={metrics.resonance}
+          />
+          <MetricCard 
+            icon={<TrendingUp className="w-5 h-5" />}
+            label="Retención"
+            value={`${metrics.retention}%`}
+            color="from-pink-500/20 to-pink-600/20"
+            borderColor="border-pink-500/30"
+            progress={metrics.retention}
+          />
         </div>
+
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left: Network Visualization */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Network Graph */}
+            <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <Network className="w-5 h-5 text-purple-400" />
+                Red de Nodos
+              </h3>
+              <div className="relative h-80 bg-slate-950/50 rounded-lg p-4 overflow-hidden">
+                <NetworkVisualization nodes={nodes} />
+              </div>
+              <div className="flex gap-2 mt-4 flex-wrap">
+                <button onClick={seedNodes} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">
+                  Seed 10 nodes
+                </button>
+                <button onClick={sendPulse} className="px-4 py-2 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 rounded-lg text-sm transition">
+                  Send Pulse
+                </button>
+                <button onClick={forceMutation} className="px-4 py-2 bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/30 rounded-lg text-sm transition">
+                  Force Mutation
+                </button>
+              </div>
+            </div>
+
+            {/* Pulse & Resonance Charts */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-xl p-6">
+                <h3 className="text-sm font-bold mb-4 text-slate-400">Historial de Pulsos</h3>
+                <MiniChart data={pulseHistory} color="#7c3aed" />
+              </div>
+              <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-xl p-6">
+                <h3 className="text-sm font-bold mb-4 text-slate-400">Evolución Resonancia</h3>
+                <MiniChart data={resonanceHistory} color="#06b6d4" />
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Events & Timeline */}
+          <div className="space-y-6">
+            {/* Events Stream */}
+            <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-cyan-400" />
+                Events Stream
+              </h3>
+              <div className="h-96 overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
+                {events.map(event => (
+                  <div key={event.id} className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50 animate-fadeIn">
+                    <div className="text-xs text-slate-500 mb-1">{event.time}</div>
+                    <div className="text-sm">{event.text}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Timeline Notes */}
+            <div className="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-xl p-6">
+              <h3 className="text-lg font-bold mb-4">Timeline & Notes</h3>
+              <div className="flex gap-2 mb-4">
+                <input 
+                  type="text"
+                  value={noteInput}
+                  onChange={(e) => setNoteInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && addNote()}
+                  placeholder="Nota breve..."
+                  className="flex-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-purple-500"
+                />
+                <button onClick={addNote} className="px-4 py-2 bg-gradient-to-r from-purple-600 to-cyan-500 rounded-lg font-bold text-slate-950 text-sm hover:opacity-90">
+                  Add
+                </button>
+              </div>
+              <div className="h-48 overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
+                {timeline.map(note => (
+                  <div key={note.id} className="border-l-2 border-purple-500 pl-3 py-2">
+                    <div className="text-xs text-slate-500">{note.time}</div>
+                    <div className="text-sm mt-1">{note.text}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Nodes Table */}
+        {nodes.length > 0 && (
+          <div className="mt-6 bg-slate-900/50 backdrop-blur border border-slate-800 rounded-xl p-6">
+            <h3 className="text-lg font-bold mb-4">Tabla de Nodos</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-800">
+                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Node</th>
+                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Arquetipo</th>
+                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Status</th>
+                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Interacciones</th>
+                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Actividad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {nodes.map(node => (
+                    <tr key={node.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition">
+                      <td className="py-3 px-4 font-medium">{node.handle}</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-1 rounded-full text-xs" style={{ backgroundColor: `${node.color}20`, color: node.color }}>
+                          {node.archetype}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          <Circle 
+                            className={`w-2 h-2 ${node.status === 'active' ? 'fill-green-500 text-green-500' : 'fill-slate-600 text-slate-600'}`}
+                          />
+                          {node.status}
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">{node.interactions}</td>
+                      <td className="py-3 px-4">
+                        <div className="w-full bg-slate-800 rounded-full h-2">
+                          <div 
+                            className="bg-gradient-to-r from-purple-600 to-cyan-500 h-2 rounded-full transition-all"
+                            style={{ width: `${Math.min(100, node.interactions * 10)}%` }}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <div class="muted">Env: <code id="envBadge">local</code></div>
-        <button class="ghost" id="exportCsv">Export CSV</button>
-        <button class="primary" id="startTest">Start Silent Alpha</button>
-      </div>
-    </header>
 
-    <div class="grid">
-      <!-- left column: controls + nodes -->
-      <aside class="card">
-        <strong>Control & Config</strong>
-        <div class="muted" style="margin-top:6px">Puntos rápidos (placeholder para .env y endpoints)</div>
-        <div style="margin-top:8px;font-size:13px">
-          <label class="muted">API Base</label>
-          <input id="apiBase" style="width:100%;padding:8px;margin-top:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:inherit" value="https://api.symbyon.local" />
-          <label class="muted">NODE_TEMPLATE</label>
-          <input id="nodeTemplate" style="width:100%;padding:8px;margin-top:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:inherit" value="/node/birth" />
-        </div>
-
-        <div style="margin-top:12px">
-          <strong>Nodes (10 target)</strong>
-          <div class="nodes-list" id="nodesList">
-            <!-- table injected by JS -->
-          </div>
-        </div>
-
-        <div style="margin-top:12px">
-          <strong>Quick actions</strong>
-          <div class="controls">
-            <button class="ghost" id="seedNodes">Seed 10 nodes</button>
-            <button class="ghost" id="kickPulse">Send Pulse</button>
-            <button class="ghost" id="mutate">Force Mutation</button>
-          </div>
-        </div>
-      </aside>
-
-      <!-- right column: dashboard -->
-      <section>
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div><strong>Telemetría simbiótica</strong><div class="muted">Métricas mínimas para narrar evidencia.</div></div>
-            <div class="small-stats">
-              <div class="stat">Nodes: <strong id="kNodes">0</strong></div>
-              <div class="stat">Pulses: <strong id="kPulses">0</strong></div>
-              <div class="stat">Mutations: <strong id="kMut">0</strong></div>
-            </div>
-          </div>
-
-          <div style="margin-top:12px" class="panel">
-            <div class="kpi">
-              <div class="muted">Interacciones</div>
-              <div style="font-size:20px;font-weight:700" id="kInteractions">0</div>
-              <div class="muted" style="margin-top:6px">Avg RT: <span id="kRT">—</span></div>
-            </div>
-            <div class="kpi">
-              <div class="muted">Resonancia</div>
-              <div style="font-size:20px;font-weight:700" id="kResonance">0%</div>
-              <div class="muted" style="margin-top:6px">Cualitativa: <span id="kQual">—</span></div>
-            </div>
-            <div class="kpi">
-              <div class="muted">Retención simbiótica</div>
-              <div style="font-size:20px;font-weight:700" id="kRetention">0%</div>
-              <div class="muted" style="margin-top:6px">Activos: <span id="kActive">0</span></div>
-            </div>
-          </div>
-
-          <div style="margin-top:12px">
-            <div class="muted">Events stream</div>
-            <div class="events" id="events"></div>
-          </div>
-
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <strong>Timeline & notes</strong>
-          <div class="muted" style="margin-top:6px">Registro breve de hitos durante la prueba.</div>
-          <div class="timeline" id="timeline"></div>
-          <div style="margin-top:8px;display:flex;gap:8px">
-            <input id="noteInput" placeholder="nota breve..." style="flex:1;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03)" />
-            <button class="primary" id="addNote">Add</button>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <strong>Qualitative signals</strong>
-          <div class="muted" style="margin-top:6px">Inputs que deberías coleccionar manualmente (estas son guías).</div>
-          <ul style="margin-top:8px" class="muted">
-            <li>Fascinación (texto del usuario en sus propias palabras)</li>
-            <li>Fricción (lo que lo bloqueó)</li>
-            <li>Metáforas espontáneas</li>
-            <li>Acciones sugeridas por la red</li>
-          </ul>
-        </div>
-
-        <div class="footer">
-          <div>Armstrong Monitor — alpha • local</div>
-          <div class="muted">Tip: guarda este archivo en tu repo y ábrelo en un navegador. No necesita servidor.</div>
-        </div>
-      </section>
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 6px;
+        }
+        .scrollbar-thumb-slate-700::-webkit-scrollbar-thumb {
+          background-color: #334155;
+          border-radius: 3px;
+        }
+        .scrollbar-track-slate-900::-webkit-scrollbar-track {
+          background-color: #0f172a;
+        }
+      `}</style>
     </div>
+  );
+};
+
+const MetricCard = ({ icon, label, value, color, borderColor, progress }) => (
+  <div className={`bg-gradient-to-br ${color} backdrop-blur border ${borderColor} rounded-xl p-5 relative overflow-hidden`}>
+    <div className="flex items-start justify-between mb-2">
+      <div className="text-slate-400">{icon}</div>
+      <div className="text-2xl font-bold">{value}</div>
+    </div>
+    <div className="text-sm text-slate-400">{label}</div>
+    {progress !== undefined && (
+      <div className="mt-3 w-full bg-slate-800/50 rounded-full h-1.5">
+        <div 
+          className="bg-gradient-to-r from-cyan-500 to-purple-600 h-1.5 rounded-full transition-all duration-500"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    )}
   </div>
+);
 
-  <script>
-    // Simulated monitor JS (MVP)
-    const nodes = [];
-    const eventsEl = document.getElementById('events');
-    const nodesList = document.getElementById('nodesList');
-    const kNodes = document.getElementById('kNodes');
-    const kPulses = document.getElementById('kPulses');
-    const kMut = document.getElementById('kMut');
-    const kInteractions = document.getElementById('kInteractions');
-    const kResonance = document.getElementById('kResonance');
-    const kRetention = document.getElementById('kRetention');
-    const kActive = document.getElementById('kActive');
-    const apiBase = document.getElementById('apiBase');
-    const seedBtn = document.getElementById('seedNodes');
-    const kickPulse = document.getElementById('kickPulse');
-    const mutateBtn = document.getElementById('mutate');
-    const startTest = document.getElementById('startTest');
-    const timeline = document.getElementById('timeline');
-    const noteInput = document.getElementById('noteInput');
-    const addNote = document.getElementById('addNote');
-    const exportCsv = document.getElementById('exportCsv');
+const NetworkVisualization = ({ nodes }) => {
+  const activeNodes = nodes.filter(n => n.status === 'active');
+  
+  return (
+    <div className="relative w-full h-full flex items-center justify-center">
+      {/* Center hub */}
+      <div className="absolute w-16 h-16 bg-gradient-to-br from-purple-600 to-cyan-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/50 z-10">
+        <Network className="w-8 h-8 text-slate-950" />
+      </div>
+      
+      {/* Nodes in circle */}
+      {nodes.map((node, i) => {
+        const angle = (i / nodes.length) * 2 * Math.PI;
+        const radius = 120;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        
+        return (
+          <div
+            key={node.id}
+            className="absolute transition-all duration-500"
+            style={{
+              left: '50%',
+              top: '50%',
+              transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`
+            }}
+          >
+            {/* Connection line to center */}
+            <svg className="absolute top-1/2 left-1/2 pointer-events-none" style={{ width: radius * 2, height: radius * 2, transform: 'translate(-50%, -50%)' }}>
+              <line 
+                x1={radius} 
+                y1={radius} 
+                x2={radius - x} 
+                y2={radius - y}
+                stroke={node.status === 'active' ? node.color : '#334155'}
+                strokeWidth={node.status === 'active' ? '2' : '1'}
+                opacity={node.status === 'active' ? '0.6' : '0.2'}
+                className="transition-all duration-500"
+              />
+            </svg>
+            
+            {/* Node */}
+            <div 
+              className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-500 ${
+                node.status === 'active' 
+                  ? 'shadow-lg animate-pulse' 
+                  : 'opacity-50'
+              }`}
+              style={{
+                backgroundColor: node.status === 'active' ? `${node.color}40` : '#1e293b',
+                borderColor: node.color,
+                boxShadow: node.status === 'active' ? `0 0 20px ${node.color}80` : 'none'
+              }}
+              title={`${node.handle} - ${node.archetype}`}
+            >
+              {node.id}
+            </div>
+          </div>
+        );
+      })}
+      
+      {/* Pulse waves for active nodes */}
+      {activeNodes.map(node => {
+        const i = nodes.findIndex(n => n.id === node.id);
+        const angle = (i / nodes.length) * 2 * Math.PI;
+        const radius = 120;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        
+        return (
+          <div
+            key={`pulse-${node.id}`}
+            className="absolute animate-ping"
+            style={{
+              left: '50%',
+              top: '50%',
+              transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`
+            }}
+          >
+            <div 
+              className="w-10 h-10 rounded-full"
+              style={{
+                backgroundColor: `${node.color}20`,
+                border: `2px solid ${node.color}`
+              }}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
-    function randChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-    function now(){ return new Date().toLocaleTimeString(); }
+const MiniChart = ({ data, color }) => {
+  if (data.length === 0) return <div className="h-20 flex items-center justify-center text-slate-600 text-sm">Sin datos</div>;
+  
+  const max = Math.max(...data, 1);
+  const points = data.map((val, i) => {
+    const x = (i / (data.length - 1)) * 100;
+    const y = 100 - (val / max) * 100;
+    return `${x},${y}`;
+  }).join(' ');
+  
+  return (
+    <div className="relative h-20">
+      <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <polyline
+          points={points}
+          fill="none"
+          stroke={color}
+          strokeWidth="2"
+          vectorEffect="non-scaling-stroke"
+        />
+        <polyline
+          points={`0,100 ${points} 100,100`}
+          fill={`${color}20`}
+          stroke="none"
+        />
+      </svg>
+      <div className="absolute top-0 right-0 text-2xl font-bold" style={{ color }}>
+        {data[data.length - 1] || 0}
+      </div>
+    </div>
+  );
+};
 
-    function renderNodes(){
-      kNodes.textContent = nodes.length;
-      const table = document.createElement('table');
-      table.innerHTML = `<thead><tr><th>Node</th><th>Archetype</th><th>Status</th></tr></thead>`;
-      const body = document.createElement('tbody');
-      nodes.forEach(n=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${n.handle}</td><td>${n.archetype}</td><td>${statusDot(n.status)} ${n.status}</td>`;
-        body.appendChild(tr);
-      });
-      table.appendChild(body);
-      nodesList.innerHTML=''; nodesList.appendChild(table);
-      kActive.textContent = nodes.filter(n=>n.status==='active').length;
-    }
-
-    function statusDot(status){
-      if(status==='active') return `<span class="dot green"></span>`;
-      if(status==='idle') return `<span class="dot yellow"></span>`;
-      return `<span class="dot red"></span>`;
-    }
-
-    function pushEvent(text){
-      const el = document.createElement('div'); el.className='event';
-      el.innerHTML = `<div style="font-size:12px;color:var(--muted)">${now()}</div><div style="margin-top:6px">${text}</div>`;
-      eventsEl.prepend(el);
-      // cap events
-      if(eventsEl.children.length>150) eventsEl.removeChild(eventsEl.lastChild);
-    }
-
-    function seedNodesFn(){
-      nodes.length = 0;
-      const archetypes = ['Cuidador Solar','Artífice','Guardián','Tejedor','Explorador','Sacerdote','Curador','Navegante'];
-      for(let i=1;i<=10;i++){
-        nodes.push({handle:`simbionte-${i}`,archetype:randChoice(archetypes),status: 'idle',interactions:0});
-      }
-      renderNodes();
-      pushEvent('Seeded 10 nodes (local).');
-    }
-
-    function sendPulse(){
-      if(nodes.length===0){ pushEvent('No nodes: seed first.'); return; }
-      const sender = randChoice(nodes);
-      sender.status='active'; sender.interactions += 1;
-      kInteractions.textContent = parseInt(kInteractions.textContent||'0') + 1;
-      kPulses.textContent = parseInt(kPulses.textContent||'0') + 1;
-      const txt = `${sender.handle} pulse → intención breve enviada a la red.`;
-      pushEvent(txt);
-      // update resonance heuristic
-      const r = Math.min(100, Math.round((parseInt(kPulses.textContent)||0) / 2));
-      kResonance.textContent = r + '%';
-      kRetention.textContent = Math.min(100, Math.round((parseInt(kInteractions.textContent)||0) / 3)) + '%';
-      renderNodes();
-    }
-
-    function forceMutation(){
-      kMut.textContent = parseInt(kMut.textContent||'0') + 1;
-      pushEvent('Mutation triggered by curator. Ontology version ++');
-    }
-
-    seedBtn.addEventListener('click', seedNodesFn);
-    kickPulse.addEventListener('click', sendPulse);
-    mutateBtn.addEventListener('click', forceMutation);
-
-    startTest.addEventListener('click', ()=>{
-      seedNodesFn();
-      pushEvent('Silent Alpha started — observe 10 nodes.');
-    });
-
-    addNote.addEventListener('click', ()=>{
-      const t = noteInput.value.trim(); if(!t) return; const p = document.createElement('div'); p.style.padding='6px'; p.style.borderBottom='1px solid rgba(255,255,255,0.02)'; p.innerHTML = `<div style="font-size:12px;color:var(--muted)">${now()}</div><div style="margin-top:6px">${t}</div>`; timeline.prepend(p); noteInput.value='';
-    });
-
-    exportCsv.addEventListener('click', ()=>{
-      // export simple nodes telemetry
-      if(nodes.length===0){ alert('No nodes to export.'); return; }
-      const rows = [['handle','archetype','status','interactions']];
-      nodes.forEach(n=>rows.push([n.handle,n.archetype,n.status,n.interactions]));
-      const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-      const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download='nodes_telemetry.csv'; a.click(); URL.revokeObjectURL(url);
-    });
-
-    // small UX: seed on load for convenience
-    // seedNodesFn();
-
-    // NOTES for devs (place near top of file in repo):
-    /*
-      - This index.html is an offline MVP monitor. Replace JS simulated parts with fetch() calls to real endpoints:
-        * GET /nodes -> list of nodes
-        * POST /event -> push new pulse/mutation
-        * GET /telemetry -> metrics
-      - .env placeholders to be added on server side: MODEL_KEY, NETWORK_URL, ONTOLOGY_SOURCE
-      - For production, move telemetry to a time-series DB (influx / prometheus) and secure endpoints with JWTs
-    */
-  </script>
-</body>
-</html>
+export default ArmstrongMonitor;
