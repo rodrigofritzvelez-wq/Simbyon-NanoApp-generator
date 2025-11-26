@@ -1,182 +1,259 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Symbyon — Silent Alpha Monitor</title>
-  <meta name="description" content="Monitor experimental de red simbiótica de 10 nodos — proyecto open-source ficticio pero muy bonito." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>DNA</text></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Armstrong Node — Simbionte</title>
   <style>
-    :root {
-      --bg: #0d1117;
-      --panel: #161b22;
-      --border: #30363d;
-      --text: #e6edf3;
-      --text-muted: #8b949e;
-      --green: #4ade80;
-      --cyan: #06b6d4;
-      --violet: #7c3aed;
-      --amber: #f59e0b;
-      --pink: #ec4899;
-      --emerald: #10b981;
-      --blue: #3b82f6;
-      --purple: #8b5cf6;
-    }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-    }
-    header {
-      padding: 1rem 1.5rem;
-      font-size: 600 1.5rem/1.2 'Inter';
-      border-bottom: 1px solid var(--border);
-      background: rgba(22, 27, 34, 0.8);
-      backdrop-filter: blur(10px);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .container {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 1rem;
-      padding: 1rem;
-      max-width: 1600px;
-      margin: 0 auto;
-      width: 100%;
-    }
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .panel:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-    h2 {
-      margin: 0 0 0.8rem 0;
-      font-size: 1rem;
-      font-weight: 600;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    #network {
-      flex: 1;
-      position: relative;
-      background: #0d1117;
-      border-radius: 8px;
-      overflow: hidden;
-      cursor: grab;
-    }
-    #network:active { cursor: grabbing; }
-    canvas#netCanvas { display: block; width: 100%; height: 100%; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.875rem;
-    }
-    th, td {
-      padding: 0.5rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    th { color: var(--text-muted); font-weight: 500; }
-    .status {
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-    .active { background: rgba(74,222,128,0.2); color: var(--green); }
-    .idle { background: rgba(251,191,36,0.2); color: #fbbf24; }
-
-    .log {
-      flex: 1;
-      overflow-y: auto;
-      font-size: 0.875rem;
-      line-height: 1.5;
-    }
-    .log-line {
-      padding: 0.4rem 0;
-      border-bottom: 1px solid var(--border);
-      opacity: 0.9;
-    }
-    .charts {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      height: 200px;
-    }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      border-top: 1px solid var(--border);
-    }
-
-    @media (max-width: 1024px) {
-      .container { grid-template-columns: 1fr; }
-      .charts { grid-template-columns: 1fr; height: auto; }
-    }
+    :root{--bg:#071022;--card:#0b1320;--muted:#94a3b8;--accent:#7c3aed}
+    *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#04101a 0%,#031018 100%);color:#e6eef8;padding:18px}
+    .wrap{max-width:820px;margin:0 auto}
+    header{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#06b6d4);display:flex;align-items:center;justify-content:center;color:#051226;font-weight:800}
+    h1{margin:0;font-size:18px}
+    p.lead{margin:6px 0 0;color:var(--muted)}
+    .card{background:var(--card);padding:14px;border-radius:12px;margin-top:14px;border:1px solid rgba(255,255,255,0.03)}
+    label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .row{display:flex;gap:8px}
+    button{padding:10px 12px;border-radius:10px;border:none;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#06b6d4);color:#041226;font-weight:700}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+    .muted{color:var(--muted);font-size:13px}
+    .status{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:700}
+    .log{max-height:260px;overflow:auto;padding:8px;background:rgba(255,255,255,0.02);border-radius:8px;margin-top:10px}
+    .log-item{padding:8px;border-bottom:1px solid rgba(255,255,255,0.02);font-size:13px}
+    .small{font-size:13px;color:var(--muted)}
+    .flex-between{display:flex;justify-content:space-between;align-items:center}
+    .hint{font-size:12px;color:var(--muted);margin-top:8px}
+    .field-inline{display:flex;gap:8px;align-items:center}
+    a.link{color:var(--accent);text-decoration:none}
+    @media(max-width:720px){.row{flex-direction:column}}
   </style>
 </head>
 <body>
-  <header>DNA Symbyon — Silent Alpha Monitor (10 nodos experimentales)</header>
-
-  <div class="container">
-    <!-- Red interactiva -->
-    <div class="panel">
-      <h2>Red Simbiótica</h2>
-      <div id="network"><canvas id="netCanvas"></canvas></div>
-    </div>
-
-    <!-- Actividad reciente -->
-    <div class="panel">
-      <h2>Actividad en tiempo real</h2>
-      <div class="log" id="events"></div>
-    </div>
-
-    <!-- Tabla de nodos -->
-    <div class="panel" style="grid-column: 1 / -1;">
-      <h2>Nodos activos</h2>
-      <table id="nodeTable"></table>
-    </div>
-
-    <!-- Gráficos -->
-    <div class="panel" style="grid-column: 1 / -1;">
-      <h2>Pulsos y Resonancia colectiva</h2>
-      <div class="charts">
-        <canvas id="pulseChart"></canvas>
-        <canvas id="resonanceChart"></canvas>
+  <div class="wrap">
+    <header>
+      <div class="logo">S</div>
+      <div>
+        <h1>Armstrong Node — Simbionte</h1>
+        <p class="lead">Micro-nodo autosuficiente. Diseñado como célula fundacional del Core. Pega este archivo en un servidor o úsalo local.</p>
       </div>
+    </header>
+
+    <div class="card">
+      <div class="flex-between">
+        <div>
+          <div class="small muted">Identidad del Nodo</div>
+          <div style="margin-top:8px">
+            <strong id="nodeHandle">—</strong> <span id="nodeStatus" class="status">idle</span>
+            <div class="muted small" id="nodeArchetype">—</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="muted small">Env</div>
+          <div class="muted">Local / Offline</div>
+        </div>
+      </div>
+
+      <label>API Base (opcional)</label>
+      <input id="apiBase" placeholder="https://api.simbyon.local" />
+      <div class="hint">Si no hay backend, el nodo simula localmente.</div>
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="birthBtn" class="btn-primary">Birth — Nacer</button>
+        <button id="resetBtn" class="btn-ghost">Reset local</button>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button id="pulseBtn" class="btn-primary">✨ Pulse</button>
+        <button id="integrateBtn" class="btn-ghost">🔗 Integrate</button>
+        <button id="expressBtn" class="btn-ghost">📤 Express</button>
+        <button id="exportBtn" class="btn-ghost">⬇ Export Log</button>
+      </div>
+
+      <div class="hint">Funciones:
+        <ul class="muted" style="margin-top:6px">
+          <li>birth(): registra/identifica al nodo</li>
+          <li>pulse(): envía intención a la red</li>
+          <li>integrate(): solicita integración ontológica</li>
+          <li>express(): pide una acción/ejemplo</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Configuración rápida</h2>
+      <label>Handle</label>
+      <input id="handleInput" placeholder="simbionte-42" />
+      <label>Arquetipo</label>
+      <select id="archetypeSelect">
+        <option>Cuidador Solar</option>
+        <option>Artífice</option>
+        <option>Guardián</option>
+        <option>Tejedor</option>
+        <option>Explorador</option>
+        <option>Sacerdote</option>
+        <option>Curador</option>
+        <option>Navegante</option>
+      </select>
+      <label class="small">Intención corta (10 palabras máximo)</label>
+      <input id="intentInput" placeholder="Ej: diseñar ritual breve para la rueda de virtud" maxlength="120" />
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="saveConfig" class="btn-primary">Guardar Config</button>
+        <button id="loadConfig" class="btn-ghost">Cargar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between"><h2>Log local</h2><div class="small muted">Eventos recientes</div></div>
+      <div class="log" id="log"></div>
+    </div>
+
+    <div class="card">
+      <h2>Manual mínimo</h2>
+      <div class="muted small">Cómo usar</div>
+      <ol style="margin-top:8px">
+        <li>Define handle y arquetipo.</li>
+        <li>Pulsa <strong>Birth</strong> para nacer en la simsfera local.</li>
+        <li>Usa <strong>Pulse</strong> para enviar intención; observa el log.</li>
+        <li>Si tienes API, configura API Base y el nodo intentará comunicarse.</li>
+      </ol>
+      <div class="hint">Dev notes: endpoints esperados (si decides integrar):</div>
+      <pre class="muted small">POST {API_BASE}/node/birth  body: { handle, archetype, intent }
+POST {API_BASE}/node/pulse  body: { handle, intent, timestamp }
+POST {API_BASE}/node/integrate body: { handle, snapshot }
+GET  {API_BASE}/node/express?handle=XYZ</pre>
     </div>
   </div>
 
-  <footer>
-    Symbyon Silent Alpha © 2025 — Proyecto ficticio open-source • <a href="https://github.com/tu-usuario/symbyon-monitor" style="color:#58a6ff;">github.com/tu-usuario/symbyon-monitor</a>
-  </footer>
-
   <script>
-    // === Datos iniciales ===
-    const nodes = [
-      { id: 1,  name: "simbionte-1",  arch: "Artífice",       status: "active", color: "#4ade80", x:0.2, y:0.3
+    // Minimal node behavior (offline-first). Use apiBase to switch to networked mode.
+    const lsKey = 'armstrong_node_state_v1';
+    const logEl = document.getElementById('log');
+    const handleInput = document.getElementById('handleInput');
+    const archetypeSelect = document.getElementById('archetypeSelect');
+    const intentInput = document.getElementById('intentInput');
+    const birthBtn = document.getElementById('birthBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const pulseBtn = document.getElementById('pulseBtn');
+    const integrateBtn = document.getElementById('integrateBtn');
+    const expressBtn = document.getElementById('expressBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const apiBaseInput = document.getElementById('apiBase');
+    const nodeHandleEl = document.getElementById('nodeHandle');
+    const nodeStatusEl = document.getElementById('nodeStatus');
+    const nodeArchetypeEl = document.getElementById('nodeArchetype');
+    const saveConfig = document.getElementById('saveConfig');
+    const loadConfig = document.getElementById('loadConfig');
+
+    let state = { handle: null, archetype: null, intent: null, status: 'idle', log: [] };
+
+    function saveState(){ localStorage.setItem(lsKey, JSON.stringify(state)); }
+    function loadState(){ const s = localStorage.getItem(lsKey); if(s) state = JSON.parse(s); renderState(); }
+
+    function pushLog(text){ const item = { id: Date.now(), time: new Date().toLocaleTimeString(), text }; state.log.unshift(item); if(state.log.length>200) state.log.pop(); renderLog(); saveState(); }
+
+    function renderLog(){ logEl.innerHTML = state.log.map(it => `<div class="log-item"><div class="muted small">${it.time}</div><div>${it.text}</div></div>`).join(''); }
+    function renderState(){ nodeHandleEl.textContent = state.handle || '—'; nodeArchetypeEl.textContent = state.archetype || '—'; nodeStatusEl.textContent = state.status || 'idle'; renderLog(); }
+
+    function birth(){
+      const h = handleInput.value.trim(); const a = archetypeSelect.value; const intent = intentInput.value.trim();
+      if(!h){ alert('Pon un handle para nacer.'); return; }
+      state.handle = h; state.archetype = a; state.intent = intent; state.status = 'active';
+      pushLog(`birth() — Nodo ${h} nacido como ${a}. Intent: "${intent || '—'}"`);
+      renderState();
+      // try network birth if api set
+      const base = apiBaseInput.value.trim();
+      if(base){
+        fetch(base.replace(/\/+$/,'') + '/node/birth', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({handle:state.handle, archetype:state.archetype, intent:state.intent})
+        }).then(r=>r.ok?pushLog('birth() enviado a API'):pushLog('birth() — API returned error')).catch(e=>pushLog('birth() — API unreachable'));
+      }
+      saveState();
+    }
+
+    function pulse(){
+      if(!state.handle){ alert('Nace primero con Birth.'); return; }
+      state.status = 'active';
+      const payload = { handle: state.handle, intent: intentInput.value.trim() || state.intent || 'pulso simbiótico', timestamp: new Date().toISOString() };
+      pushLog(`pulse() — intención enviada: "${payload.intent}"`);
+      // network attempt
+      const base = apiBaseInput.value.trim();
+      if(base){
+        fetch(base.replace(/\/+$/,'') + '/node/pulse', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
+          .then(r=>r.json())
+          .then(j=>pushLog('pulse() → respuesta API: ' + (j?.message || JSON.stringify(j))))
+          .catch(e=>pushLog('pulse() — API unreachable'));
+      } else {
+        // local simulated reaction
+        setTimeout(()=>{
+          pushLog('pulse() — red local: resonancia detectada. Sugerencia: probar con 3 usuarios.');
+          // small local mutation
+          if(Math.random()>0.7){ pushLog('mutate() — ontología local actualizada'); }
+        }, 600 + Math.random()*800);
+      }
+      saveState();
+      renderState();
+    }
+
+    function integrate(){
+      if(!state.handle){ alert('Nace primero con Birth.'); return; }
+      pushLog('integrate() — solicitando integración ontológica (local)');
+      const base = apiBaseInput.value.trim();
+      const snapshot = { handle: state.handle, archetype: state.archetype, intent: state.intent, log: state.log.slice(0,10) };
+      if(base){
+        fetch(base.replace(/\/+$/,'') + '/node/integrate', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(snapshot) })
+          .then(r=>r.json()).then(j=>pushLog('integrate() → API: '+ (j?.message||JSON.stringify(j)))).catch(e=>pushLog('integrate() — API unreachable'));
+      } else {
+        setTimeout(()=>{
+          pushLog('integrate() — simulación: integración aplicada.');
+        },500);
+      }
+      saveState();
+    }
+
+    function express(){
+      if(!state.handle){ alert('Nace primero con Birth.'); return; }
+      const base = apiBaseInput.value.trim();
+      if(base){
+        fetch(base.replace(/\/+$/,'') + '/node/express?handle=' + encodeURIComponent(state.handle))
+          .then(r=>r.json()).then(j=>pushLog('express() → API: '+ (j?.message||JSON.stringify(j)))).catch(e=>pushLog('express() — API unreachable'));
+      } else {
+        // local example expression
+        const sample = `express() — ejemplo: "teje un ritual de 3 pasos para la rueda de virtud"`;
+        pushLog(sample);
+      }
+      saveState();
+    }
+
+    function resetLocal(){ if(confirm('Resetear estado local?')){ state = { handle: null, archetype: null, intent: null, status: 'idle', log: [] }; saveState(); renderState(); }}
+
+    function exportLog(){ const csv = ['time,text'].concat(state.log.map(l=>`"${l.time}","${l.text.replace(/"/g,'""')}"`)).join('\n'); const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=(state.handle||'node')+'_log.csv'; a.click(); URL.revokeObjectURL(url); }
+
+    // config save/load
+    saveConfig.addEventListener('click', ()=>{
+      const cfg = { handle: handleInput.value.trim(), archetype: archetypeSelect.value, intent: intentInput.value.trim(), apiBase: apiBaseInput.value.trim() };
+      localStorage.setItem('armstrong_node_cfg', JSON.stringify(cfg)); pushLog('Config guardada localmente');
+    });
+    loadConfig.addEventListener('click', ()=>{
+      const s = localStorage.getItem('armstrong_node_cfg'); if(!s){ alert('No hay config guardada'); return; }
+      const c = JSON.parse(s); handleInput.value=c.handle||''; archetypeSelect.value=c.archetype||archetypeSelect.options[0].value; intentInput.value=c.intent||''; apiBaseInput.value=c.apiBase||''; pushLog('Config cargada');
+    });
+
+    // wire buttons
+    birthBtn.addEventListener('click', birth);
+    resetBtn.addEventListener('click', resetLocal);
+    pulseBtn.addEventListener('click', pulse);
+    integrateBtn.addEventListener('click', integrate);
+    expressBtn.addEventListener('click', express);
+    exportBtn.addEventListener('click', exportLog);
+
+    // init
+    loadState();
+    // if no state, prefill with suggestion
+    if(!state.handle){ handleInput.value='simbionte-'+Math.floor(Math.random()*900+100); intentInput.value='probar ritual breve para rueda de virtud'; }
+  </script>
+</body>
+</html>
