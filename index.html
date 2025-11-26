@@ -1,274 +1,179 @@
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Armstrong — Monitor (index.html)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Symbyon — Silent Alpha Monitor</title>
   <style>
-    :root{--bg:#071025;--card:#0d1624;--accent:#7c3aed;--muted:#98a8bf;--glass:rgba(255,255,255,0.03)}
-    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#021026 0%, #051022 100%);color:#e8f1fb}
-    .wrap{max-width:1200px;margin:22px auto;padding:20px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:800;color:#041224}
-    h1{margin:0;font-size:18px}
-    .muted{color:var(--muted);font-size:13px}
-    .grid{display:grid;grid-template-columns:320px 1fr;gap:16px;margin-top:18px}
-    .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-    .small-stats{display:flex;gap:8px;flex-wrap:wrap}
-    .stat{background:var(--glass);padding:8px;border-radius:10px;font-size:13px;color:var(--muted)}
-    .nodes-list{margin-top:10px}
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    th,td{padding:8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.02)}
-    th{font-size:12px;color:var(--muted)}
-    .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px}
-    .dot.green{background:#4ade80}
-    .dot.yellow{background:#facc15}
-    .dot.red{background:#fb7185}
-    .events{height:320px;overflow:auto;padding:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:10px}
-    .event{padding:8px;border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,0.02)}
-    .controls{display:flex;gap:8px;margin-top:10px}
-    button.primary{background:linear-gradient(90deg,var(--accent),#06b6d4);border:none;padding:10px 12px;border-radius:10px;color:#041224;font-weight:700;cursor:pointer}
-    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
-    .panel{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .kpi{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
-    .timeline{height:120px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:8px;padding:8px;overflow:auto}
-    .footer{margin-top:16px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
-    @media(max-width:980px){.grid{grid-template-columns:1fr}.panel{grid-template-columns:1fr}}
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Inter, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      padding: 16px;
+      font-size: 20px;
+      font-weight: 600;
+      border-bottom: 1px solid #30363d;
+    }
+    .container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 12px;
+      padding: 12px;
+      overflow: hidden;
+    }
+    .panel {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    h2 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0 0 10px 0;
+    }
+    #network {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .node {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      position: absolute;
+      cursor: pointer;
+      border: 2px solid #e6edf3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    td, th {
+      padding: 6px;
+      border-bottom: 1px solid #30363d;
+    }
+    #events, #timeline {
+      flex: 1;
+      overflow-y: auto;
+      font-size: 13px;
+    }
+    .event, .time-note {
+      padding: 6px 0;
+      border-bottom: 1px solid #30363d;
+    }
+    .charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: 180px;
+      gap: 8px;
+    }
+    canvas {
+      background: #0d1117;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="logo">S</div>
-        <div>
-          <h1>Armstrong — Monitor</h1>
-          <div class="muted">Cockpit mínimo para observación de la Simbyon Core (alpha)</div>
-        </div>
+  <header>🧬 Symbyon Silent Alpha — Monitor Experimental de 10 Nodos</header>
+
+  <div class="container">
+    <!-- Network Panel -->
+    <div class="panel" id="network-panel">
+      <h2>Mapa de Red Simbiótica</h2>
+      <div id="network"></div>
+    </div>
+
+    <!-- Events -->
+    <div class="panel" style="height: 240px;">
+      <h2>Actividad Reciente</h2>
+      <div id="events"></div>
+    </div>
+
+    <!-- Node Table -->
+    <div class="panel" style="grid-column: 1 / span 2; height: 200px;">
+      <h2>Nodos Activos</h2>
+      <table id="nodeTable"></table>
+    </div>
+
+    <!-- Charts -->
+    <div class="panel" style="grid-column: 1 / span 2;">
+      <h2>Pulsos y Resonancia</h2>
+      <div class="charts">
+        <canvas id="pulseChart"></canvas>
+        <canvas id="resonanceChart"></canvas>
       </div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <div class="muted">Env: <code id="envBadge">local</code></div>
-        <button class="ghost" id="exportCsv">Export CSV</button>
-        <button class="primary" id="startTest">Start Silent Alpha</button>
-      </div>
-    </header>
+    </div>
 
-    <div class="grid">
-      <!-- left column: controls + nodes -->
-      <aside class="card">
-        <strong>Control & Config</strong>
-        <div class="muted" style="margin-top:6px">Puntos rápidos (placeholder para .env y endpoints)</div>
-        <div style="margin-top:8px;font-size:13px">
-          <label class="muted">API Base</label>
-          <input id="apiBase" style="width:100%;padding:8px;margin-top:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:inherit" value="https://api.symbyon.local" />
-          <label class="muted">NODE_TEMPLATE</label>
-          <input id="nodeTemplate" style="width:100%;padding:8px;margin-top:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:inherit" value="/node/birth" />
-        </div>
-
-        <div style="margin-top:12px">
-          <strong>Nodes (10 target)</strong>
-          <div class="nodes-list" id="nodesList">
-            <!-- table injected by JS -->
-          </div>
-        </div>
-
-        <div style="margin-top:12px">
-          <strong>Quick actions</strong>
-          <div class="controls">
-            <button class="ghost" id="seedNodes">Seed 10 nodes</button>
-            <button class="ghost" id="kickPulse">Send Pulse</button>
-            <button class="ghost" id="mutate">Force Mutation</button>
-          </div>
-        </div>
-      </aside>
-
-      <!-- right column: dashboard -->
-      <section>
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div><strong>Telemetría simbiótica</strong><div class="muted">Métricas mínimas para narrar evidencia.</div></div>
-            <div class="small-stats">
-              <div class="stat">Nodes: <strong id="kNodes">0</strong></div>
-              <div class="stat">Pulses: <strong id="kPulses">0</strong></div>
-              <div class="stat">Mutations: <strong id="kMut">0</strong></div>
-            </div>
-          </div>
-
-          <div style="margin-top:12px" class="panel">
-            <div class="kpi">
-              <div class="muted">Interacciones</div>
-              <div style="font-size:20px;font-weight:700" id="kInteractions">0</div>
-              <div class="muted" style="margin-top:6px">Avg RT: <span id="kRT">—</span></div>
-            </div>
-            <div class="kpi">
-              <div class="muted">Resonancia</div>
-              <div style="font-size:20px;font-weight:700" id="kResonance">0%</div>
-              <div class="muted" style="margin-top:6px">Cualitativa: <span id="kQual">—</span></div>
-            </div>
-            <div class="kpi">
-              <div class="muted">Retención simbiótica</div>
-              <div style="font-size:20px;font-weight:700" id="kRetention">0%</div>
-              <div class="muted" style="margin-top:6px">Activos: <span id="kActive">0</span></div>
-            </div>
-          </div>
-
-          <div style="margin-top:12px">
-            <div class="muted">Events stream</div>
-            <div class="events" id="events"></div>
-          </div>
-
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <strong>Timeline & notes</strong>
-          <div class="muted" style="margin-top:6px">Registro breve de hitos durante la prueba.</div>
-          <div class="timeline" id="timeline"></div>
-          <div style="margin-top:8px;display:flex;gap:8px">
-            <input id="noteInput" placeholder="nota breve..." style="flex:1;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03)" />
-            <button class="primary" id="addNote">Add</button>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <strong>Qualitative signals</strong>
-          <div class="muted" style="margin-top:6px">Inputs que deberías coleccionar manualmente (estas son guías).</div>
-          <ul style="margin-top:8px" class="muted">
-            <li>Fascinación (texto del usuario en sus propias palabras)</li>
-            <li>Fricción (lo que lo bloqueó)</li>
-            <li>Metáforas espontáneas</li>
-            <li>Acciones sugeridas por la red</li>
-          </ul>
-        </div>
-
-        <div class="footer">
-          <div>Armstrong Monitor — alpha • local</div>
-          <div class="muted">Tip: guarda este archivo en tu repo y ábrelo en un navegador. No necesita servidor.</div>
-        </div>
-      </section>
+    <!-- Timeline -->
+    <div class="panel" style="grid-column: 1 / span 2; height: 160px;">
+      <h2>Timeline del Experimento</h2>
+      <div id="timeline"></div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // Simulated monitor JS (MVP)
-    const nodes = [];
-    const eventsEl = document.getElementById('events');
-    const nodesList = document.getElementById('nodesList');
-    const kNodes = document.getElementById('kNodes');
-    const kPulses = document.getElementById('kPulses');
-    const kMut = document.getElementById('kMut');
-    const kInteractions = document.getElementById('kInteractions');
-    const kResonance = document.getElementById('kResonance');
-    const kRetention = document.getElementById('kRetention');
-    const kActive = document.getElementById('kActive');
-    const apiBase = document.getElementById('apiBase');
-    const seedBtn = document.getElementById('seedNodes');
-    const kickPulse = document.getElementById('kickPulse');
-    const mutateBtn = document.getElementById('mutate');
-    const startTest = document.getElementById('startTest');
-    const timeline = document.getElementById('timeline');
-    const noteInput = document.getElementById('noteInput');
-    const addNote = document.getElementById('addNote');
-    const exportCsv = document.getElementById('exportCsv');
+    // --- Datos simulados iniciales ---
+    let nodes = [
+      { id: 1, handle: "simbionte-1", archetype: "Artífice", status: "active", interactions: 7, color: "#4ade80" },
+      { id: 2, handle: "simbionte-2", archetype: "Explorador", status: "idle", interactions: 2, color: "#06b6d4" },
+      { id: 3, handle: "simbionte-3", archetype: "Tejedor", status: "active", interactions: 11, color: "#7c3aed" },
+      { id: 4, handle: "simbionte-4", archetype: "Curador", status: "idle", interactions: 1, color: "#f59e0b" },
+      { id: 5, handle: "simbionte-5", archetype: "Guardián", status: "idle", interactions: 4, color: "#ec4899" },
+      { id: 6, handle: "simbionte-6", archetype: "Sacerdote", status: "active", interactions: 9, color: "#10b981" },
+      { id: 7, handle: "simbionte-7", archetype: "Navegante", status: "idle", interactions: 3, color: "#3b82f6" },
+      { id: 8, handle: "simbionte-8", archetype: "Cuidador Solar", status: "idle", interactions: 5, color: "#8b5cf6" },
+      { id: 9, handle: "simbionte-9", archetype: "Artífice", status: "idle", interactions: 2, color: "#4ade80" },
+      { id: 10, handle: "simbionte-10", archetype: "Explorador", status: "active", interactions: 12, color: "#06b6d4" }
+    ];
 
-    function randChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-    function now(){ return new Date().toLocaleTimeString(); }
+    let events = [
+      { id: 1, time: "09:12:44", text: "✨ simbionte-10 envió pulso → red activada" },
+      { id: 2, time: "09:11:02", text: "🌱 Sistema inicializado con 10 nodos" },
+      { id: 3, time: "09:10:51", text: "🧬 Mutación espontánea detectada" },
+      { id: 4, time: "09:09:22", text: "📡 Nodo simbionte-3 estableció puente con simbionte-6" },
+      { id: 5, time: "09:08:01", text: "💠 Resonancia superó el umbral del 40%" }
+    ];
 
-    function renderNodes(){
-      kNodes.textContent = nodes.length;
-      const table = document.createElement('table');
-      table.innerHTML = `<thead><tr><th>Node</th><th>Archetype</th><th>Status</th></tr></thead>`;
-      const body = document.createElement('tbody');
-      nodes.forEach(n=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${n.handle}</td><td>${n.archetype}</td><td>${statusDot(n.status)} ${n.status}</td>`;
-        body.appendChild(tr);
-      });
-      table.appendChild(body);
-      nodesList.innerHTML=''; nodesList.appendChild(table);
-      kActive.textContent = nodes.filter(n=>n.status==='active').length;
+    let timeline = [
+      { id: 1, time: "09:05", text: "Primera activación colectiva registrada" },
+      { id: 2, time: "09:02", text: "Nodo 6 muestra comportamiento resonante" },
+      { id: 3, time: "08:59", text: "Inicio de prueba de observación" }
+    ];
+
+    let pulseHistory = [1, 3, 5, 8, 11, 14, 18, 21, 24, 28, 31];
+    let resonanceHistory = [5, 9, 13, 18, 26, 33, 41, 48, 54, 58, 62];
+
+    // --- Render UI ---
+
+    function renderEvents() {
+      document.getElementById("events").innerHTML = events
+        .map(e => `<div class="event">${e.time} — ${e.text}</div>`) 
+        .join("");
     }
 
-    function statusDot(status){
-      if(status==='active') return `<span class="dot green"></span>`;
-      if(status==='idle') return `<span class="dot yellow"></span>`;
-      return `<span class="dot red"></span>`;
+    function renderTimeline() {
+      document.getElementById("timeline").innerHTML = timeline
+        .map(t => `<div class="time-note">${t.time} — ${t.text}</div>`) 
+        .join("");
     }
 
-    function pushEvent(text){
-      const el = document.createElement('div'); el.className='event';
-      el.innerHTML = `<div style="font-size:12px;color:var(--muted)">${now()}</div><div style="margin-top:6px">${text}</div>`;
-      eventsEl.prepend(el);
-      // cap events
-      if(eventsEl.children.length>150) eventsEl.removeChild(eventsEl.lastChild);
-    }
-
-    function seedNodesFn(){
-      nodes.length = 0;
-      const archetypes = ['Cuidador Solar','Artífice','Guardián','Tejedor','Explorador','Sacerdote','Curador','Navegante'];
-      for(let i=1;i<=10;i++){
-        nodes.push({handle:`simbionte-${i}`,archetype:randChoice(archetypes),status: 'idle',interactions:0});
-      }
-      renderNodes();
-      pushEvent('Seeded 10 nodes (local).');
-    }
-
-    function sendPulse(){
-      if(nodes.length===0){ pushEvent('No nodes: seed first.'); return; }
-      const sender = randChoice(nodes);
-      sender.status='active'; sender.interactions += 1;
-      kInteractions.textContent = parseInt(kInteractions.textContent||'0') + 1;
-      kPulses.textContent = parseInt(kPulses.textContent||'0') + 1;
-      const txt = `${sender.handle} pulse → intención breve enviada a la red.`;
-      pushEvent(txt);
-      // update resonance heuristic
-      const r = Math.min(100, Math.round((parseInt(kPulses.textContent)||0) / 2));
-      kResonance.textContent = r + '%';
-      kRetention.textContent = Math.min(100, Math.round((parseInt(kInteractions.textContent)||0) / 3)) + '%';
-      renderNodes();
-    }
-
-    function forceMutation(){
-      kMut.textContent = parseInt(kMut.textContent||'0') + 1;
-      pushEvent('Mutation triggered by curator. Ontology version ++');
-    }
-
-    seedBtn.addEventListener('click', seedNodesFn);
-    kickPulse.addEventListener('click', sendPulse);
-    mutateBtn.addEventListener('click', forceMutation);
-
-    startTest.addEventListener('click', ()=>{
-      seedNodesFn();
-      pushEvent('Silent Alpha started — observe 10 nodes.');
-    });
-
-    addNote.addEventListener('click', ()=>{
-      const t = noteInput.value.trim(); if(!t) return; const p = document.createElement('div'); p.style.padding='6px'; p.style.borderBottom='1px solid rgba(255,255,255,0.02)'; p.innerHTML = `<div style="font-size:12px;color:var(--muted)">${now()}</div><div style="margin-top:6px">${t}</div>`; timeline.prepend(p); noteInput.value='';
-    });
-
-    exportCsv.addEventListener('click', ()=>{
-      // export simple nodes telemetry
-      if(nodes.length===0){ alert('No nodes to export.'); return; }
-      const rows = [['handle','archetype','status','interactions']];
-      nodes.forEach(n=>rows.push([n.handle,n.archetype,n.status,n.interactions]));
-      const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-      const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download='nodes_telemetry.csv'; a.click(); URL.revokeObjectURL(url);
-    });
-
-    // small UX: seed on load for convenience
-    // seedNodesFn();
-
-    // NOTES for devs (place near top of file in repo):
-    /*
-      - This index.html is an offline MVP monitor. Replace JS simulated parts with fetch() calls to real endpoints:
-        * GET /nodes -> list of nodes
-        * POST /event -> push new pulse/mutation
-        * GET /telemetry -> metrics
-      - .env placeholders to be added on server side: MODEL_KEY, NETWORK_URL, ONTOLOGY_SOURCE
-      - For production, move telemetry to a time-series DB (influx / prometheus) and secure endpoints with JWTs
-    */
-  </script>
-</body>
-</html>
+    function renderNodeTable() {
+      document.getElementById("nodeTable").innerHTML = `
+        <tr><th>ID</th><th>Handle</th><th>Arquetipo</th><th>Estado</th><th>Interacciones</th></tr>
+        ${
