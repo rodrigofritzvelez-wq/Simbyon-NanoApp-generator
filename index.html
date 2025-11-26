@@ -1,179 +1,182 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Symbyon — Silent Alpha Monitor</title>
+  <meta name="description" content="Monitor experimental de red simbiótica de 10 nodos — proyecto open-source ficticio pero muy bonito." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>DNA</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --green: #4ade80;
+      --cyan: #06b6d4;
+      --violet: #7c3aed;
+      --amber: #f59e0b;
+      --pink: #ec4899;
+      --emerald: #10b981;
+      --blue: #3b82f6;
+      --purple: #8b5cf6;
+    }
+
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      padding: 0;
-      font-family: Inter, sans-serif;
-      background: #0d1117;
-      color: #e6edf3;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      overflow-x: hidden;
     }
     header {
-      padding: 16px;
-      font-size: 20px;
-      font-weight: 600;
-      border-bottom: 1px solid #30363d;
+      padding: 1rem 1.5rem;
+      font-size: 600 1.5rem/1.2 'Inter';
+      border-bottom: 1px solid var(--border);
+      background: rgba(22, 27, 34, 0.8);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .container {
       flex: 1;
       display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 12px;
-      padding: 12px;
-      overflow: hidden;
+      grid-template-columns: 1fr 340px;
+      gap: 1rem;
+      padding: 1rem;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
     }
     .panel {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      padding: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
+    .panel:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
     h2 {
-      font-size: 15px;
+      margin: 0 0 0.8rem 0;
+      font-size: 1rem;
       font-weight: 600;
-      margin: 0 0 10px 0;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
     #network {
       flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       position: relative;
+      background: #0d1117;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: grab;
     }
-    .node {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      position: absolute;
-      cursor: pointer;
-      border: 2px solid #e6edf3;
-    }
+    #network:active { cursor: grabbing; }
+    canvas#netCanvas { display: block; width: 100%; height: 100%; }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      font-size: 0.875rem;
     }
-    td, th {
-      padding: 6px;
-      border-bottom: 1px solid #30363d;
+    th, td {
+      padding: 0.5rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
     }
-    #events, #timeline {
+    th { color: var(--text-muted); font-weight: 500; }
+    .status {
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .active { background: rgba(74,222,128,0.2); color: var(--green); }
+    .idle { background: rgba(251,191,36,0.2); color: #fbbf24; }
+
+    .log {
       flex: 1;
       overflow-y: auto;
-      font-size: 13px;
+      font-size: 0.875rem;
+      line-height: 1.5;
     }
-    .event, .time-note {
-      padding: 6px 0;
-      border-bottom: 1px solid #30363d;
+    .log-line {
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border);
+      opacity: 0.9;
     }
     .charts {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      height: 180px;
-      gap: 8px;
+      gap: 1rem;
+      height: 200px;
     }
-    canvas {
-      background: #0d1117;
-      border-radius: 6px;
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 1024px) {
+      .container { grid-template-columns: 1fr; }
+      .charts { grid-template-columns: 1fr; height: auto; }
     }
   </style>
 </head>
 <body>
-  <header>🧬 Symbyon Silent Alpha — Monitor Experimental de 10 Nodos</header>
+  <header>DNA Symbyon — Silent Alpha Monitor (10 nodos experimentales)</header>
 
   <div class="container">
-    <!-- Network Panel -->
-    <div class="panel" id="network-panel">
-      <h2>Mapa de Red Simbiótica</h2>
-      <div id="network"></div>
+    <!-- Red interactiva -->
+    <div class="panel">
+      <h2>Red Simbiótica</h2>
+      <div id="network"><canvas id="netCanvas"></canvas></div>
     </div>
 
-    <!-- Events -->
-    <div class="panel" style="height: 240px;">
-      <h2>Actividad Reciente</h2>
-      <div id="events"></div>
+    <!-- Actividad reciente -->
+    <div class="panel">
+      <h2>Actividad en tiempo real</h2>
+      <div class="log" id="events"></div>
     </div>
 
-    <!-- Node Table -->
-    <div class="panel" style="grid-column: 1 / span 2; height: 200px;">
-      <h2>Nodos Activos</h2>
+    <!-- Tabla de nodos -->
+    <div class="panel" style="grid-column: 1 / -1;">
+      <h2>Nodos activos</h2>
       <table id="nodeTable"></table>
     </div>
 
-    <!-- Charts -->
-    <div class="panel" style="grid-column: 1 / span 2;">
-      <h2>Pulsos y Resonancia</h2>
+    <!-- Gráficos -->
+    <div class="panel" style="grid-column: 1 / -1;">
+      <h2>Pulsos y Resonancia colectiva</h2>
       <div class="charts">
         <canvas id="pulseChart"></canvas>
         <canvas id="resonanceChart"></canvas>
       </div>
     </div>
-
-    <!-- Timeline -->
-    <div class="panel" style="grid-column: 1 / span 2; height: 160px;">
-      <h2>Timeline del Experimento</h2>
-      <div id="timeline"></div>
-    </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <footer>
+    Symbyon Silent Alpha © 2025 — Proyecto ficticio open-source • <a href="https://github.com/tu-usuario/symbyon-monitor" style="color:#58a6ff;">github.com/tu-usuario/symbyon-monitor</a>
+  </footer>
+
   <script>
-    // --- Datos simulados iniciales ---
-    let nodes = [
-      { id: 1, handle: "simbionte-1", archetype: "Artífice", status: "active", interactions: 7, color: "#4ade80" },
-      { id: 2, handle: "simbionte-2", archetype: "Explorador", status: "idle", interactions: 2, color: "#06b6d4" },
-      { id: 3, handle: "simbionte-3", archetype: "Tejedor", status: "active", interactions: 11, color: "#7c3aed" },
-      { id: 4, handle: "simbionte-4", archetype: "Curador", status: "idle", interactions: 1, color: "#f59e0b" },
-      { id: 5, handle: "simbionte-5", archetype: "Guardián", status: "idle", interactions: 4, color: "#ec4899" },
-      { id: 6, handle: "simbionte-6", archetype: "Sacerdote", status: "active", interactions: 9, color: "#10b981" },
-      { id: 7, handle: "simbionte-7", archetype: "Navegante", status: "idle", interactions: 3, color: "#3b82f6" },
-      { id: 8, handle: "simbionte-8", archetype: "Cuidador Solar", status: "idle", interactions: 5, color: "#8b5cf6" },
-      { id: 9, handle: "simbionte-9", archetype: "Artífice", status: "idle", interactions: 2, color: "#4ade80" },
-      { id: 10, handle: "simbionte-10", archetype: "Explorador", status: "active", interactions: 12, color: "#06b6d4" }
-    ];
-
-    let events = [
-      { id: 1, time: "09:12:44", text: "✨ simbionte-10 envió pulso → red activada" },
-      { id: 2, time: "09:11:02", text: "🌱 Sistema inicializado con 10 nodos" },
-      { id: 3, time: "09:10:51", text: "🧬 Mutación espontánea detectada" },
-      { id: 4, time: "09:09:22", text: "📡 Nodo simbionte-3 estableció puente con simbionte-6" },
-      { id: 5, time: "09:08:01", text: "💠 Resonancia superó el umbral del 40%" }
-    ];
-
-    let timeline = [
-      { id: 1, time: "09:05", text: "Primera activación colectiva registrada" },
-      { id: 2, time: "09:02", text: "Nodo 6 muestra comportamiento resonante" },
-      { id: 3, time: "08:59", text: "Inicio de prueba de observación" }
-    ];
-
-    let pulseHistory = [1, 3, 5, 8, 11, 14, 18, 21, 24, 28, 31];
-    let resonanceHistory = [5, 9, 13, 18, 26, 33, 41, 48, 54, 58, 62];
-
-    // --- Render UI ---
-
-    function renderEvents() {
-      document.getElementById("events").innerHTML = events
-        .map(e => `<div class="event">${e.time} — ${e.text}</div>`) 
-        .join("");
-    }
-
-    function renderTimeline() {
-      document.getElementById("timeline").innerHTML = timeline
-        .map(t => `<div class="time-note">${t.time} — ${t.text}</div>`) 
-        .join("");
-    }
-
-    function renderNodeTable() {
-      document.getElementById("nodeTable").innerHTML = `
-        <tr><th>ID</th><th>Handle</th><th>Arquetipo</th><th>Estado</th><th>Interacciones</th></tr>
-        ${
+    // === Datos iniciales ===
+    const nodes = [
+      { id: 1,  name: "simbionte-1",  arch: "Artífice",       status: "active", color: "#4ade80", x:0.2, y:0.3
