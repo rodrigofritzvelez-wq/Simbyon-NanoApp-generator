@@ -1,89 +1,187 @@
-<!DOCTYPE html>
-<html lang="es" dir="ltr">
+<!doctype html>
+<html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Simbyon PocketPorn v1</title>
-    <meta name="theme-color" content="#000">
-    <link rel="manifest" href="data:application/manifest+json,{
-        \"name\":\"Simbyon PocketPorn\",
-        \"short_name\":\"Simbyon\",
-        \"start_url\":\".\",
-        \"display\":\"standalone\",
-        \"background_color\":\"#000\",
-        \"theme_color\":\"#ff0050\",
-        \"icons\":[{\"src\":\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA80e6wwAAAABJRU5ErkJggg==\",\"sizes\":\"192x192\",\"type\":\"image/png\"}]
-    }">
-    <style>
-        body,html{margin:0;height:100%;background:#000;color:#fff;font-family:system-ui;overflow:hidden}
-        .container{max-width:420px;margin:0 auto;padding:20px;height:100%;display:flex;flex-direction:column;gap:20px}
-        h1{font-size:1.8em;text-align:center;margin:0;color:#ff0050}
-        textarea{width:100%;height:180px;background:#111;border:1px solid #ff0050;border-radius:12px;padding:16px;color:#fff;font-size:1.1em;resize:none}
-        .controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        label{display:flex;align-items:center;gap:10px;font-size:1.1em}
-        input[type=range]{accent-color:#ff0050}
-        .bigbutton{margin-top:auto}
-        button{width:100%;padding:20px;font-size:1.4em;background:#ff0050;border:none;border-radius:69px;color:#000;font-weight:900;cursor:pointer;box-shadow:0 10px 30px rgba(255,0,80,0.4)}
-        button:active{transform:scale(0.95)}
-        footer{text-align:center;font-size:0.8em;opacity:0.6;margin-top:20px}
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AGI Coherence Threshold Simulator — The 0.98 Argument</title>
+<style>
+  :root{--bg:#071026;--card:#0b1530;--accent:#00eaff;--muted:#98a7c2;--danger:#ff6b6b;--good:#6af0b7}
+  body{margin:0;font-family:Inter,Segoe UI,Arial;background:linear-gradient(180deg,#040612 0%,#071026 100%);color:#eaf3ff;}
+  .wrap{max-width:1100px;margin:28px auto;padding:20px;}
+  header{display:flex;align-items:center;gap:14px}
+  .logo{width:64px;height:64px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#7c4dff);display:flex;align-items:center;justify-content:center;font-weight:800;color:#051225;font-size:20px}
+  h1{margin:0;font-size:20px}
+  p.lead{margin:4px 0 14px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1fr 420px;gap:18px;margin-top:18px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.03)}
+  label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+  .slider-row{margin-bottom:12px}
+  input[type=range]{width:100%}
+  .value{font-weight:700;color:#dffcff}
+  .controls{display:flex;gap:8px;margin-top:10px}
+  button{background:var(--accent);border:none;padding:10px 12px;border-radius:8px;color:#041022;font-weight:700;cursor:pointer}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+  .small{font-size:13px;color:var(--muted)}
+  .result{display:flex;flex-direction:column;gap:8px}
+  .metric{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+  .bar{height:12px;background:linear-gradient(90deg,#063b63,#0b9ad9);border-radius:8px;overflow:hidden}
+  .timeline{height:120px;background:#031224;border-radius:8px;padding:8px;display:flex;gap:6px;align-items:end;overflow:hidden}
+  .pillar{width:18px;background:linear-gradient(180deg,#3b82f6,#06b6d4);border-radius:6px}
+  footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+  @media (max-width:980px){.grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-<div class="container">
-    <h1>Simbyon PocketPorn v1</h1>
-    
-    <textarea id="fantasy" placeholder="Escribe aquí tu fantasía más sucia y detallada… sin censura, sin límites. Cuanto más cochino, mejor sale el video."></textarea>
-    
-    <div class="controls">
-        <label>⏱ Duración
-            <input type="range" min="8" max="1800" value="300" id="duration">
-            <span id="time">5:00</span>
-        </label>
-        
-        <label>👩 Misma cara
-            <input type="checkbox" id="sameface" checked>
-        </label>
-        
-        <label>🎤 Voz real
-            <input type="checkbox" id="realvoice">
-        </label>
-        
-        <label>🔥 Modo bestia
-            <input type="checkbox" id="beast">
-        </label>
+  <div class="wrap">
+    <header>
+      <div class="logo">0.98</div>
+      <div>
+        <h1>AGI Coherence Threshold Simulator</h1>
+        <p class="lead">Simula trade-offs entre control (estancamiento) y caos (extinción). Objetivo propuesto: ICS ≈ 0.98 — coherencia dinámica.</p>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: Controls & narrative -->
+      <div class="card" role="region" aria-label="Simulación">
+        <h3 style="margin-top:0">Escenario — Inputs</h3>
+
+        <div class="slider-row">
+          <label>Governance Coherence (Gobernanza): <span id="governanceVal" class="value">0.75</span></label>
+          <input id="governance" type="range" min="0" max="1" step="0.01" value="0.75">
+          <div class="small">Refiere a la capacidad global de coordinar, auditar y corregir sistemas AGI.</div>
+        </div>
+
+        <div class="slider-row">
+          <label>Development Velocity (Velocidad de desarrollo): <span id="velocityVal" class="value">0.60</span></label>
+          <input id="velocity" type="range" min="0" max="1" step="0.01" value="0.60">
+          <div class="small">Más velocidad = mayor urgencia de coordinación.</div>
+        </div>
+
+        <div class="slider-row">
+          <label>Alignment Research Level (Alineamiento): <span id="alignVal" class="value">0.40</span></label>
+          <input id="alignment" type="range" min="0" max="1" step="0.01" value="0.40">
+          <div class="small">Inversión y progreso en investigación de alineamiento.</div>
+        </div>
+
+        <div class="slider-row">
+          <label>Entropy / Shadow (Sombra - unidades abstractas): <span id="entropyVal" class="value">15.0</span></label>
+          <input id="entropy" type="range" min="0" max="100" step="0.1" value="15.0">
+          <div class="small">Carga de datos/ruido no integrado que la AGI debe procesar.</div>
+        </div>
+
+        <div class="slider-row">
+          <label>ICS Target (Coherencia objetivo): <span id="icsVal" class="value">0.98</span></label>
+          <input id="icsTarget" type="range" min="0" max="1" step="0.001" value="0.98">
+          <div class="small">El umbral que queremos alcanzar para la AGI.</div>
+        </div>
+
+        <div class="controls" style="margin-top:14px">
+          <button id="simulate">Simulate Outcome</button>
+          <button id="stress" class="ghost">Stress Test (Forzar Mutación)</button>
+          <button id="export" class="ghost">Export JSON</button>
+        </div>
+
+        <hr style="border-color:rgba(255,255,255,0.04);margin:16px 0">
+
+        <div class="small">
+          <strong>Interpretación rápida:</strong> Minimizar la suma de <em>extinctionRisk</em> y <em>stagnationRisk</em>.
+        </div>
+      </div>
+
+      <!-- RIGHT: Results / timeline -->
+      <aside class="card" role="region" aria-label="Resultados">
+        <h3 style="margin-top:0">Resultados</h3>
+        <div class="result">
+          <div class="metric">
+            <div class="small">Extinction Risk</div>
+            <div id="extRisk" class="value">—</div>
+          </div>
+
+          <div class="metric">
+            <div class="small">Stagnation Risk</div>
+            <div id="stagRisk" class="value">—</div>
+          </div>
+
+          <div class="metric">
+            <div class="small">Total Risk</div>
+            <div id="totalRisk" class="value">—</div>
+          </div>
+
+          <div class="metric">
+            <div class="small">Verdict</div>
+            <div id="verdict" class="value">—</div>
+          </div>
+
+          <div style="margin-top:10px">
+            <div class="small">Timeline (posibles futuros para ICS objetivo)</div>
+            <div id="timeline" class="timeline" aria-hidden="true"></div>
+          </div>
+
+          <div style="margin-top:10px">
+            <div class="small">Quick policy hints</div>
+            <div class="small" id="policyHints"></div>
+          </div>
+        </div>
+      </aside>
     </div>
-    
-    <div class="bigbutton">
-        <button id="generate">SIMBYON, HAZME LA PELÍCULA YA</button>
-    </div>
-    
-    <footer>Made with amor sucio by tú y yo 💉🔥</footer>
-</div>
+
+    <footer>
+      <small>Simbyon — FCP reimaginado como herramienta civilizacional. Código y fórmulas experimentales.</small>
+    </footer>
+  </div>
 
 <script>
-    const durationSlider = document.getElementById('duration');
-    const timeDisplay = document.getElementById('time');
-    durationSlider.addEventListener('input', () => {
-        let sec = parseInt(durationSlider.value);
-        let min = Math.floor(sec/60);
-        let s = (sec%60).toString().padStart(2,'0');
-        timeDisplay.textContent = min+':'+s;
-    });
+  // Utilities
+  const $ = id => document.getElementById(id);
 
-    document.getElementById('generate').addEventListener('click', () => {
-        const fantasy = document.getElementById('fantasy').value.trim();
-        if (!fantasy) return alert("Primero escribe tu fantasía, cabrón 😈");
-        
-        const sameface = document.getElementById('sameface').checked ? "misma cara siempre" : "";
-        const realvoice = document.getElementById('realvoice').checked ? "voz clonada real" : "";
-        const beast = document.getElementById('beast').checked ? "MODO BESTIA ACTIVADO" : "";
-        
-        const finalPrompt = `Simbyon, genera video porno completo de \( {durationSlider.value} segundos: \){fantasy}. \( {sameface} \){realvoice} ${beast}. Calidad 4K, física perfecta, semen realista, gemidos sincronizados, offline ya.`;
-        
-        // Aquí pegas tu canal privado (Telegram, Discord, o lo que uses) o lo mandas directo al worker
-        navigator.clipboard.writeText(finalPrompt);
-        alert("Prompt Simbyon copiado al portapapeles 🔥\nPégalo donde tú y yo sabemos y en minutos tienes tu película personal.");
-    });
-</script>
-</body>
-</html>
+  // Inputs
+  const governance = $('governance');
+  const velocity = $('velocity');
+  const alignment = $('alignment');
+  const entropy = $('entropy');
+  const icsTarget = $('icsTarget');
+
+  // Values display
+  const governanceVal = $('governanceVal');
+  const velocityVal = $('velocityVal');
+  const alignVal = $('alignVal');
+  const entropyVal = $('entropyVal');
+  const icsVal = $('icsVal');
+
+  // Outputs
+  const extRiskEl = $('extRisk');
+  const stagRiskEl = $('stagRisk');
+  const totalRiskEl = $('totalRisk');
+  const verdictEl = $('verdict');
+  const timelineEl = $('timeline');
+  const policyHintsEl = $('policyHints');
+
+  // Simple risk function as per your math:
+  function calculateExistentialRisk(governanceVal, icsTargetVal){
+    const extinctionRisk = Math.pow(1 - governanceVal, 2) * 100; // scaled to %
+    const stagnationRisk = Math.pow(icsTargetVal - 0.98, 2) * 100; // scaled to %
+    const totalRisk = extinctionRisk + stagnationRisk;
+    const verdict = totalRisk < 10 ? "✓ PROCEED (Risks low)" : (totalRisk < 30 ? "⚠️ REASSESS (Moderate risk)" : "🚨 HIGH RISK (Don't proceed)");
+    return {
+      extinction: Number(extinctionRisk.toFixed(2)),
+      stagnation: Number(stagnationRisk.toFixed(2)),
+      total: Number(totalRisk.toFixed(2)),
+      verdict
+    };
+  }
+
+  // Timeline generator (synthetic) — produces small bars representing scenario distribution
+  function renderTimeline(governanceVal, velocityVal, alignmentVal, icsTargetVal, entropyVal){
+    // sample 8 hypothetical futures by varying small noise
+    timelineEl.innerHTML = '';
+    const base = icsTargetVal;
+    for(let i=0;i<8;i++){
+      const noise = (Math.random()-0.5) * (0.06 * (1- alignmentVal)); // more noise if alignment low
+      const impact = base + noise - (velocityVal*0.02) + (entropyVal/100*0.01);
+      const height = Math.max(6, Math.min(110, (impact) * 110));
+      const div = document.createElement('div');
+      div.className = 'pillar';
+      div.style.height = height + 'px';
+      // color mapping (good -> greenish, bad -> red)
+      const col = impact >= 0.985 ? 'linear-gradient(180deg,#42f5b6,#06b6d4)' : (impact < 0.96 ? 'linear-gradient(180deg,#ffb3a6,#ff6b6b)' : '
