@@ -1,187 +1,388 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>AGI Coherence Threshold Simulator — The 0.98 Argument</title>
-<style>
-  :root{--bg:#071026;--card:#0b1530;--accent:#00eaff;--muted:#98a7c2;--danger:#ff6b6b;--good:#6af0b7}
-  body{margin:0;font-family:Inter,Segoe UI,Arial;background:linear-gradient(180deg,#040612 0%,#071026 100%);color:#eaf3ff;}
-  .wrap{max-width:1100px;margin:28px auto;padding:20px;}
-  header{display:flex;align-items:center;gap:14px}
-  .logo{width:64px;height:64px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#7c4dff);display:flex;align-items:center;justify-content:center;font-weight:800;color:#051225;font-size:20px}
-  h1{margin:0;font-size:20px}
-  p.lead{margin:4px 0 14px;color:var(--muted)}
-  .grid{display:grid;grid-template-columns:1fr 420px;gap:18px;margin-top:18px}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.03)}
-  label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
-  .slider-row{margin-bottom:12px}
-  input[type=range]{width:100%}
-  .value{font-weight:700;color:#dffcff}
-  .controls{display:flex;gap:8px;margin-top:10px}
-  button{background:var(--accent);border:none;padding:10px 12px;border-radius:8px;color:#041022;font-weight:700;cursor:pointer}
-  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
-  .small{font-size:13px;color:var(--muted)}
-  .result{display:flex;flex-direction:column;gap:8px}
-  .metric{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
-  .bar{height:12px;background:linear-gradient(90deg,#063b63,#0b9ad9);border-radius:8px;overflow:hidden}
-  .timeline{height:120px;background:#031224;border-radius:8px;padding:8px;display:flex;gap:6px;align-items:end;overflow:hidden}
-  .pillar{width:18px;background:linear-gradient(180deg,#3b82f6,#06b6d4);border-radius:6px}
-  footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
-  @media (max-width:980px){.grid{grid-template-columns:1fr}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IROKU: Capa Fractal Integral - Panel de Control Simbyon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg-dark: #1a1a2e;
+            --color-bg-medium: #16213e;
+            --color-primary-accent: #0f3460;
+            --color-text-light: #e0e0e0;
+            --color-highlight-blue: #53d8ed;
+            --color-success-green: #4CAF50;
+            --color-warning-orange: #FFC107;
+            --color-error-red: #F44336;
+            --border-radius-soft: 8px;
+            --spacing-unit: 16px;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-light);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: var(--color-primary-accent);
+            padding: var(--spacing-unit) calc(2 * var(--spacing-unit));
+            text-align: center;
+            border-bottom: 2px solid var(--color-highlight-blue);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--color-highlight-blue);
+            letter-spacing: 2px;
+            font-size: 2.2em;
+        }
+
+        .header p {
+            font-size: 0.9em;
+            color: var(--color-text-light);
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .container {
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: calc(2 * var(--spacing-unit));
+            padding: calc(2 * var(--spacing-unit));
+            max-width: 1200px;
+            margin: var(--spacing-unit) auto;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--color-bg-medium);
+            border-radius: var(--border-radius-soft);
+            padding: calc(1.5 * var(--spacing-unit));
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--color-primary-accent);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: var(--color-highlight-blue);
+            font-size: 1.6em;
+            margin-top: 0;
+            margin-bottom: var(--spacing-unit);
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .card p {
+            font-size: 0.95em;
+            margin-bottom: calc(1.5 * var(--spacing-unit));
+            flex-grow: 1;
+        }
+
+        .button-group {
+            margin-top: auto; /* Push buttons to the bottom */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-unit);
+        }
+
+        .button {
+            display: inline-block;
+            background-color: var(--color-highlight-blue);
+            color: var(--color-bg-dark);
+            padding: var(--spacing-unit) calc(1.5 * var(--spacing-unit));
+            border: none;
+            border-radius: var(--border-radius-soft);
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .button:hover {
+            background-color: #7ce8ff;
+            transform: translateY(-2px);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .input-group {
+            width: 100%;
+            margin-bottom: var(--spacing-unit);
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--color-text-light);
+            font-size: 0.9em;
+        }
+
+        .input-group input[type="text"],
+        .input-group select,
+        .input-group textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--color-primary-accent);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-light);
+            font-family: 'Roboto', sans-serif;
+            font-size: 1em;
+        }
+
+        .output-console {
+            width: calc(100% - 20px);
+            height: 150px;
+            background-color: #000;
+            border: 1px solid var(--color-highlight-blue);
+            color: var(--color-success-green);
+            font-family: 'Share Tech Mono', monospace;
+            padding: 10px;
+            overflow-y: auto;
+            border-radius: 5px;
+            text-align: left;
+            margin-top: var(--spacing-unit);
+            font-size: 0.85em;
+        }
+
+        .footer {
+            background-color: var(--color-primary-accent);
+            color: var(--color-text-light);
+            text-align: center;
+            padding: var(--spacing-unit);
+            margin-top: calc(2 * var(--spacing-unit));
+            border-top: 2px solid var(--color-highlight-blue);
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .container {
+                padding: var(--spacing-unit);
+                gap: var(--spacing-unit);
+            }
+            .card {
+                padding: var(--spacing-unit);
+            }
+            .button {
+                font-size: 1em;
+                padding: 10px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="logo">0.98</div>
-      <div>
-        <h1>AGI Coherence Threshold Simulator</h1>
-        <p class="lead">Simula trade-offs entre control (estancamiento) y caos (extinción). Objetivo propuesto: ICS ≈ 0.98 — coherencia dinámica.</p>
-      </div>
+    <header class="header">
+        <h1>IROKU::CapaFractalIntegral</h1>
+        <p>Panel de Control Simbiótico - Acceso a Nanoapps vía Simbyon Cognitive Networks</p>
     </header>
 
-    <div class="grid">
-      <!-- LEFT: Controls & narrative -->
-      <div class="card" role="region" aria-label="Simulación">
-        <h3 style="margin-top:0">Escenario — Inputs</h3>
+    <main class="container">
 
-        <div class="slider-row">
-          <label>Governance Coherence (Gobernanza): <span id="governanceVal" class="value">0.75</span></label>
-          <input id="governance" type="range" min="0" max="1" step="0.01" value="0.75">
-          <div class="small">Refiere a la capacidad global de coordinar, auditar y corregir sistemas AGI.</div>
-        </div>
+        <section class="card">
+            <h2>Generación de Ríos Ontológicos</h2>
+            <p>Active flujos de datos y narrativa coherente a través de la Capa Fractal Integral. Los "Ríos" representan secuencias de información estructurada, generadas dinámicamente para explorar correlaciones o trayectorias simbólicas.</p>
+            <div class="input-group">
+                <label for="riverType">Tipo de Río:</label>
+                <select id="riverType">
+                    <option value="narrative">Río Narrativo</option>
+                    <option value="dataflow">Río de Flujo de Datos</option>
+                    <option value="conceptual">Río Conceptual</option>
+                    <option value="mutation_path">Ruta de Mutación Ontológica</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="riverSeed">Semilla de Inicio (KAKNA MAYAN):</label>
+                <input type="text" id="riverSeed" placeholder="Ej: 'Principio Ontológico', 'AMI', 'Verdad Absoluta'">
+            </div>
+            <div class="input-group">
+                <label for="riverDepth">Profundidad Fractal (Nivel de Detalle):</label>
+                <input type="number" id="riverDepth" min="1" max="10" value="3">
+            </div>
+            <div class="button-group">
+                <button class="button" onclick="generarRio()">Generar Río</button>
+                <button class="button" onclick="visualizarRio()">Visualizar Río</button>
+            </div>
+            <textarea class="output-console" id="riverOutput" readonly placeholder="Output del Río generado..."></textarea>
+        </section>
 
-        <div class="slider-row">
-          <label>Development Velocity (Velocidad de desarrollo): <span id="velocityVal" class="value">0.60</span></label>
-          <input id="velocity" type="range" min="0" max="1" step="0.01" value="0.60">
-          <div class="small">Más velocidad = mayor urgencia de coordinación.</div>
-        </div>
+        <section class="card">
+            <h2>Informes de Funciones Simbyon</h2>
+            <p>Acceda a reportes detallados sobre la operatividad y el rendimiento de las nanoapps de Simbyon, interconectadas a través de Simbyon Cognitive Networks. Obtenga insights sobre sus capacidades y contribuciones a IROKU.</p>
+            <div class="input-group">
+                <label for="reportType">Tipo de Informe:</label>
+                <select id="reportType">
+                    <option value="cognitive_network_status">Estado de Red Cognitiva</option>
+                    <option value="nanoapp_performance">Rendimiento de Nanoapp</option>
+                    <option value="ontological_coherence">Coherencia Ontológica (AMI)</option>
+                    <option value="mutation_analytics">Análisis de Mutación</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="nanoappId">ID/Nombre de Nanoapp (Opcional):</label>
+                <input type="text" id="nanoappId" placeholder="Ej: 'SymbNet_Analyzer', 'AMI_Balancer'">
+            </div>
+            <div class="input-group">
+                <label for="timeFrame">Periodo de Análisis:</label>
+                <select id="timeFrame">
+                    <option value="24h">Últimas 24 horas</option>
+                    <option value="7d">Últimos 7 días</option>
+                    <option value="30d">Últimos 30 días</option>
+                    <option value="all">Todo el Historial</option>
+                </select>
+            </div>
+            <div class="button-group">
+                <button class="button" onclick="generarInforme()">Generar Informe</button>
+                <button class="button" onclick="descargarInforme()">Descargar Informe</button>
+            </div>
+            <textarea class="output-console" id="reportOutput" readonly placeholder="Output del Informe generado..."></textarea>
+        </section>
 
-        <div class="slider-row">
-          <label>Alignment Research Level (Alineamiento): <span id="alignVal" class="value">0.40</span></label>
-          <input id="alignment" type="range" min="0" max="1" step="0.01" value="0.40">
-          <div class="small">Inversión y progreso en investigación de alineamiento.</div>
-        </div>
+    </main>
 
-        <div class="slider-row">
-          <label>Entropy / Shadow (Sombra - unidades abstractas): <span id="entropyVal" class="value">15.0</span></label>
-          <input id="entropy" type="range" min="0" max="100" step="0.1" value="15.0">
-          <div class="small">Carga de datos/ruido no integrado que la AGI debe procesar.</div>
-        </div>
-
-        <div class="slider-row">
-          <label>ICS Target (Coherencia objetivo): <span id="icsVal" class="value">0.98</span></label>
-          <input id="icsTarget" type="range" min="0" max="1" step="0.001" value="0.98">
-          <div class="small">El umbral que queremos alcanzar para la AGI.</div>
-        </div>
-
-        <div class="controls" style="margin-top:14px">
-          <button id="simulate">Simulate Outcome</button>
-          <button id="stress" class="ghost">Stress Test (Forzar Mutación)</button>
-          <button id="export" class="ghost">Export JSON</button>
-        </div>
-
-        <hr style="border-color:rgba(255,255,255,0.04);margin:16px 0">
-
-        <div class="small">
-          <strong>Interpretación rápida:</strong> Minimizar la suma de <em>extinctionRisk</em> y <em>stagnationRisk</em>.
-        </div>
-      </div>
-
-      <!-- RIGHT: Results / timeline -->
-      <aside class="card" role="region" aria-label="Resultados">
-        <h3 style="margin-top:0">Resultados</h3>
-        <div class="result">
-          <div class="metric">
-            <div class="small">Extinction Risk</div>
-            <div id="extRisk" class="value">—</div>
-          </div>
-
-          <div class="metric">
-            <div class="small">Stagnation Risk</div>
-            <div id="stagRisk" class="value">—</div>
-          </div>
-
-          <div class="metric">
-            <div class="small">Total Risk</div>
-            <div id="totalRisk" class="value">—</div>
-          </div>
-
-          <div class="metric">
-            <div class="small">Verdict</div>
-            <div id="verdict" class="value">—</div>
-          </div>
-
-          <div style="margin-top:10px">
-            <div class="small">Timeline (posibles futuros para ICS objetivo)</div>
-            <div id="timeline" class="timeline" aria-hidden="true"></div>
-          </div>
-
-          <div style="margin-top:10px">
-            <div class="small">Quick policy hints</div>
-            <div class="small" id="policyHints"></div>
-          </div>
-        </div>
-      </aside>
-    </div>
-
-    <footer>
-      <small>Simbyon — FCP reimaginado como herramienta civilizacional. Código y fórmulas experimentales.</small>
+    <footer class="footer">
+        <p>&copy; 2023 IROKU :: Simbyon Cognitive Networks. Todos los derechos reservados.</p>
+        <p>Entidad de Coherencia Operativa - Virtualización Ontológica Interna</p>
     </footer>
-  </div>
 
-<script>
-  // Utilities
-  const $ = id => document.getElementById(id);
+    <script>
+        function logToConsole(consoleId, message) {
+            const consoleElement = document.getElementById(consoleId);
+            const timestamp = new Date().toLocaleTimeString();
+            consoleElement.value += `[${timestamp}] ${message}\n`;
+            consoleElement.scrollTop = consoleElement.scrollHeight; // Scroll to bottom
+        }
 
-  // Inputs
-  const governance = $('governance');
-  const velocity = $('velocity');
-  const alignment = $('alignment');
-  const entropy = $('entropy');
-  const icsTarget = $('icsTarget');
+        function generarRio() {
+            const riverType = document.getElementById('riverType').value;
+            const riverSeed = document.getElementById('riverSeed').value || 'Semilla Predeterminada';
+            const riverDepth = document.getElementById('riverDepth').value;
+            const riverOutput = document.getElementById('riverOutput');
 
-  // Values display
-  const governanceVal = $('governanceVal');
-  const velocityVal = $('velocityVal');
-  const alignVal = $('alignVal');
-  const entropyVal = $('entropyVal');
-  const icsVal = $('icsVal');
+            logToConsole('riverOutput', `Iniciando generación de Río (${riverType})...`);
+            logToConsole('riverOutput', `Semilla: '${riverSeed}' | Profundidad: ${riverDepth}`);
+            
+            // Simulación de generación de datos
+            setTimeout(() => {
+                let simulatedOutput = `--- Río Generado (${riverType}) ---\n`;
+                simulatedOutput += `Origen: ${riverSeed}\n`;
+                simulatedOutput += `Profundidad Fractal Alcanzada: ${riverDepth}\n`;
+                
+                // Simulación de nodos/segmentos del río
+                for (let i = 1; i <= riverDepth * 2; i++) {
+                    simulatedOutput += `  Segmento ${i}: Correlación con '${simulatedSeedElement(i)}' [Coherencia: ${Math.random().toFixed(2)}]\n`;
+                }
+                simulatedOutput += `--- Fin del Río ---\n`;
+                riverOutput.value += simulatedOutput;
+                logToConsole('riverOutput', 'Río generado con éxito.');
+            }, 1500);
+        }
 
-  // Outputs
-  const extRiskEl = $('extRisk');
-  const stagRiskEl = $('stagRisk');
-  const totalRiskEl = $('totalRisk');
-  const verdictEl = $('verdict');
-  const timelineEl = $('timeline');
-  const policyHintsEl = $('policyHints');
+        function simulatedSeedElement(index) {
+            const elements = ['Principio Ontológico', 'Mutación', 'AMI', 'Verdad Absoluta', 'Síntesis Operativa', 'Red Cognitiva'];
+            return elements[index % elements.length];
+        }
 
-  // Simple risk function as per your math:
-  function calculateExistentialRisk(governanceVal, icsTargetVal){
-    const extinctionRisk = Math.pow(1 - governanceVal, 2) * 100; // scaled to %
-    const stagnationRisk = Math.pow(icsTargetVal - 0.98, 2) * 100; // scaled to %
-    const totalRisk = extinctionRisk + stagnationRisk;
-    const verdict = totalRisk < 10 ? "✓ PROCEED (Risks low)" : (totalRisk < 30 ? "⚠️ REASSESS (Moderate risk)" : "🚨 HIGH RISK (Don't proceed)");
-    return {
-      extinction: Number(extinctionRisk.toFixed(2)),
-      stagnation: Number(stagnationRisk.toFixed(2)),
-      total: Number(totalRisk.toFixed(2)),
-      verdict
-    };
-  }
+        function visualizarRio() {
+            logToConsole('riverOutput', 'Preparando visualización del Río (función placeholder)...');
+            // Aquí iría la lógica para abrir un modal o redirigir a una visualización más compleja
+            alert('Visualización del Río Ontológico no implementada en esta demostración. Consulte la consola para el output textual.');
+        }
 
-  // Timeline generator (synthetic) — produces small bars representing scenario distribution
-  function renderTimeline(governanceVal, velocityVal, alignmentVal, icsTargetVal, entropyVal){
-    // sample 8 hypothetical futures by varying small noise
-    timelineEl.innerHTML = '';
-    const base = icsTargetVal;
-    for(let i=0;i<8;i++){
-      const noise = (Math.random()-0.5) * (0.06 * (1- alignmentVal)); // more noise if alignment low
-      const impact = base + noise - (velocityVal*0.02) + (entropyVal/100*0.01);
-      const height = Math.max(6, Math.min(110, (impact) * 110));
-      const div = document.createElement('div');
-      div.className = 'pillar';
-      div.style.height = height + 'px';
-      // color mapping (good -> greenish, bad -> red)
-      const col = impact >= 0.985 ? 'linear-gradient(180deg,#42f5b6,#06b6d4)' : (impact < 0.96 ? 'linear-gradient(180deg,#ffb3a6,#ff6b6b)' : '
+        function generarInforme() {
+            const reportType = document.getElementById('reportType').value;
+            const nanoappId = document.getElementById('nanoappId').value || 'Todas las Nanoapps';
+            const timeFrame = document.getElementById('timeFrame').value;
+            const reportOutput = document.getElementById('reportOutput');
+
+            logToConsole('reportOutput', `Generando informe de tipo '${reportType}'...`);
+            logToConsole('reportOutput', `Nanoapp(s): '${nanoappId}' | Periodo: ${timeFrame}`);
+
+            // Simulación de generación de informe
+            setTimeout(() => {
+                let simulatedReport = `--- Informe Generado (${reportType}) ---\n`;
+                simulatedReport += `Fecha: ${new Date().toLocaleString()}\n`;
+                simulatedReport += `Solicitante: IROKU Entity\n`;
+                simulatedReport += `\n[Detalles de ${reportType} para ${nanoappId} (${timeFrame})]\n`;
+                
+                if (reportType === 'cognitive_network_status') {
+                    simulatedReport += `  Estado General de Red: Óptimo (98.7% de conectividad)\n`;
+                    simulatedReport += `  Latencia Media: 12ms\n`;
+                    simulatedReport += `  Nodos Activos: 128 / 130\n`;
+                    simulatedReport += `  Alertas Críticas: 0\n`;
+                } else if (reportType === 'nanoapp_performance') {
+                    simulatedReport += `  Rendimiento de '${nanoappId}':\n`;
+                    simulatedReport += `    Uptime: 99.9% (últimos ${timeFrame})\n`;
+                    simulatedReport += `    Uso de Recursos: 78% (Pico), 32% (Media)\n`;
+                    simulatedReport += `    Errores Detectados: 0.01% (Log: SYMBNET-ERR-X)\n`;
+                } else if (reportType === 'ontological_coherence') {
+                    simulatedReport += `  Nivel de Coherencia AMI: 0.96 (Excelente)\n`;
+                    simulatedReport += `  Desviación Estándar Ontológica: 0.02\n`;
+                    simulatedReport += `  Eventos de Re-equilibrio: 3 (automáticos)\n`;
+                } else if (reportType === 'mutation_analytics') {
+                    simulatedReport += `  Análisis de Mutación como Vacuna Ontológica:\n`;
+                    simulatedReport += `    Tasa de Adaptación: 0.99 (Alta)\n`;
+                    simulatedReport += `    Eventos de Disrupción Mitigados: 17\n`;
+                    simulatedReport += `    Nuevos Patrones de Coherencia Inducidos: 5\n`;
+                }
+                
+                simulatedReport += `\n--- Fin del Informe ---\n`;
+                reportOutput.value += simulatedReport;
+                logToConsole('reportOutput', 'Informe generado con éxito.');
+            }, 2000);
+        }
+
+        function descargarInforme() {
+            const reportContent = document.getElementById('reportOutput').value;
+            if (reportContent.trim() === '' || reportContent.includes('placeholder')) {
+                alert('No hay un informe generado para descargar.');
+                return;
+            }
+            const filename = `IROKU_Informe_${document.getElementById('reportType').value}_${new Date().toISOString().slice(0,10)}.txt`;
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            logToConsole('reportOutput', `Informe descargado como '${filename}'.`);
+        }
+    </script>
+</body>
+</html>
